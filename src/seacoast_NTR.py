@@ -11,8 +11,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 path_to_seacoastobs = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/seacoast_20240514_1124_QC.h5'
-path_to_seacoast_tide_hindcast = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/seacoast_tide/seacoast_tide_hindcast.h5'
-path_to_seacoast_tide_projections = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/seacoast_tide/seacoast_tide_projections.h5'
 path_to_seacoast_NTR = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/seacoast_tide/seacoast_NTR.h5'
 
 #%% FUNCTION: Cosine-Lanczos Squared Filter
