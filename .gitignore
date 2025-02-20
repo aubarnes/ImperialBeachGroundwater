@@ -4,6 +4,8 @@
 *.npz
 *.csv
 *.xlsx
+*.mat
+*.rsk
 
 # Ignore system files
 .DS_Store
