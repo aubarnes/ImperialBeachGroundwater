@@ -21,7 +21,7 @@ import matplotlib.patheffects as pe
 
 ## Groundwater table
 path_to_gwt_seacoast = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/seacoast_20240514_1124_QC.h5'
-path_to_NTR_seacoast = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/seacoast_tide/seacoast_NTR.h5'
+path_to_NTR_seacoast = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/seacoast_NTR.h5'
 path_to_gwt_fifthgrove = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/fifthgrove_20240514_1124_QC.h5'
 path_to_gwt_pubworks = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/pubworks_20240514_1435_QC.h5'
 path_to_gwt_eleventhebony = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/eleventhebony_20240514_1124_QC.h5'
