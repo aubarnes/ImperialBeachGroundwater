@@ -27,7 +27,7 @@ path_to_gwt_pubworks = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/Im
 path_to_gwt_eleventhebony = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/eleventhebony_20240514_1124_QC.h5'
 
 ## Tide gauge
-path_to_ljtide = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/tide_data.h5'
+path_to_ljtide = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljtide.h5'
 path_to_ntr_dailymax_hindcast = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljtide_dailymax_hindcast.h5'
 
 ## Precipitation
