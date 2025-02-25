@@ -1,5 +1,5 @@
 """
-Figure X: Plot Seacoast Road Elevation
+Figure 1b: Plot Seacoast Road Elevation
 
 November 2024
 Austin Barnes
@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ## Groundwater table
-path_to_seacoast_elev = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/seacoast_elevation.csv'
+path_to_seacoast_elev = '../data/seacoast_elevation.csv'
 
 #%% Load Seacoast Elevation Data
 seacoast_elev = pd.read_csv(path_to_seacoast_elev)
