@@ -18,7 +18,7 @@ import pylab as P
 %matplotlib
 
 ## Outputs
-path_to_cmip6_ensemble = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/cmip6_ensemble.pkl'
+path_to_cmip6_ensemble = '../data/cmip6_ensemble.pkl'
 
 #%%
 cat = intake.open_esm_datastore('https://cadcat.s3.amazonaws.com/cae-collection.json')
