@@ -1,7 +1,8 @@
 #%%
 '''
 Converts matlab .mat file of pressure sensor data to pandas DataFrame
-matlab file already created from raw data using rsk2mat.m in IB Well Data Folders
+matlab file already was created from raw .rsk files using rsk2mat.m
+.rsk files contain timestamps and raw pressure
 '''
 import numpy as np
 import matplotlib.pyplot as plt
@@ -81,7 +82,10 @@ for file in files:
 	# Create temporary arrays & turn into lists before creating a pandas dataframe from the two separate lists
 	# Time 'tstamp' in matlab datenum format
 	t_temp = dat['tstamp']
-	t_temp = t_temp#+8/24
+	t_temp = t_temp
+
+	### Use only for some of the earliest files that have may have apparent timing issue (local time instead of UTC)
+	# t_temp = t_temp+8/24
 	# # Add 8/7 hours (in days) to match sensor time with UTC (8 hrs ahead from local Pacific w/ NO DST, 7 hrs ahead when DST)
 	# for i in range(t_temp.shape[0]):
 	# 	if t_temp[i]<7.385930833333334e+05:
@@ -110,19 +114,8 @@ for file in files:
 	# Sort by increasing time stamps
 	sorted = tp_temp[np.argsort(tp_temp[:,0])]
 
-    # Remove outliers based on pressure being more than 5 std's greater (better way to do this?)
+    # Remove large pressure outliers based on pressure being more than 5 std's greater than mean
 	sorted = sorted[sorted[:,1]<np.mean(sorted[:,1])+5*np.std(sorted[:,1])]
-
-	# Save numpy array to zipped npz format for storage and loading
-	print('Saving %s' %file+'.npz')
-	np.savez(directory+file+'.npz',tp=sorted)
-	print('Saved %s' %file+'.npz')
-
-	# To Load:
-	# AmouliX = np.load(directory+file+'.npz')
-	# AmouliXtp = AmouliX['tp']
-
-	### Code below is for creating and storing Pandas DataFrame instead of numpy arrays in zipped format ###
 
 	# Create pandas dataframe from the two lists
 	tp_df = pd.DataFrame(sorted,columns=['Time','Pressure'])
