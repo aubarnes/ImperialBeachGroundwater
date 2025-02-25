@@ -2,12 +2,9 @@
 Load and prepare the precipitation data for use in the Pastas model
 
 Observed precipitation from the Tijuana River Estuary Rain Gauge
-Basin precipitation for Otay Basin, Tijuana River Basin, and both combined
-using spatially gridded data from Google Earth Engine
 
 October 2024
 Austin Barnes
-Code to get precipitation data via Google Earth Engine from Morgan Levy
 """
 #%% Imports
 import pandas as pd
@@ -18,15 +15,10 @@ import pickle
 
 ## Paths for loading data
 path_to_TJRTLMET = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/precip_IB/TJRTLMET_full.csv'
-path_to_otaybasin_prcp = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/precip_watershed/otaybasin_prcp.csv'
-path_to_tjbasin_prcp = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/precip_watershed/tjbasin_prcp.csv'
 path_to_cmip6_ensemble = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/cmip6_ensemble.pkl'
 
 ## Paths for saving data
 path_to_IB_precip = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/precip_IB/IB_precip.h5'
-path_to_otaybasin_precip = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/precip_watershed/otaybasin_precip.h5'
-path_to_tjbasin_precip = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/precip_watershed/tjbasin_precip.h5'
-path_to_combinedbasin_precip = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/precip_watershed/combinedbasin_precip.h5'
 path_to_precip_2100 = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/precip_IB/precip_2100.h5'
 
 #%% Load and prepare TJRTLMET precipitation data
@@ -93,113 +85,6 @@ IB_precip_30daysum = IB_precip_storage['IB_precip_30daysum']
 IB_precip_30daymean = IB_precip_storage['IB_precip_30daymean']
 IB_precip_storage.close()
 
-#%% Load and prepare the Otay Basin precipitation data
-
-## Load Otay River Basin Daily Precipitation Data
-otaybasin_raw = pd.read_csv(path_to_otaybasin_prcp,header=0)
-## Convert the 'system:index' column to datetime from format "YYYYMMDD"
-otaybasin_raw['timestamp'] = pd.to_datetime(otaybasin_raw['date'], format='%Y%m%d')
-## Create new series just for the precipitation data with 'timestamp' as index
-otaybasin_1day = otaybasin_raw['prcp']
-## Make otaybasin index a datetime index
-otaybasin_1day.index = otaybasin_raw['timestamp']
-## Resample to daily data (to get frequency set exactly for stress model)
-otaybasin_1day = otaybasin_1day.resample('D').sum()
-## Fill in missing values with 0
-otaybasin_1day = otaybasin_1day.fillna(0)
-## 7-day running TOTAL Precipitation
-otaybasin_7daysum = otaybasin_1day.rolling(window=7).sum()
-## 7-day running MEAN Precipitation
-otaybasin_7daymean = otaybasin_1day.rolling(window=7).mean()
-## 30-day running TOTAL Precipitation
-otaybasin_30daysum = otaybasin_1day.rolling(window=30).sum()
-## 30-day running MEAN Precipitation
-otaybasin_30daymean = otaybasin_1day.rolling(window=30).mean()
-
-#%% Save the otaybasin_precip data
-otaybasin_precip_storage = pd.HDFStore(path_to_otaybasin_precip)
-otaybasin_precip_storage['otaybasin_1day'] = otaybasin_1day
-otaybasin_precip_storage['otaybasin_7daysum'] = otaybasin_7daysum
-otaybasin_precip_storage['otaybasin_7daymean'] = otaybasin_7daymean
-otaybasin_precip_storage['otaybasin_30daysum'] = otaybasin_30daysum
-otaybasin_precip_storage['otaybasin_30daymean'] = otaybasin_30daymean
-otaybasin_precip_storage.close()
-
-#%% Load the otaybasin_precip data
-otaybasin_precip_storage = pd.HDFStore(path_to_otaybasin_precip)
-otaybasin_1day = otaybasin_precip_storage['otaybasin_1day']
-otaybasin_7daysum = otaybasin_precip_storage['otaybasin_7daysum']
-otaybasin_7daymean = otaybasin_precip_storage['otaybasin_7daymean']
-otaybasin_30daysum = otaybasin_precip_storage['otaybasin_30daysum']
-otaybasin_30daymean = otaybasin_precip_storage['otaybasin_30daymean']
-otaybasin_precip_storage.close()
-
-#%% Load and prepare the TJ River Estuary Basin precipitation data
-
-## Load TJ River Estuary Basin Daily Precipitation Data
-tjbasin_raw = pd.read_csv(path_to_tjbasin_prcp,header=0)
-## Convert the 'system:index' column to datetime at 00:00 from format "YYYYMMDD"
-tjbasin_raw['timestamp'] = pd.to_datetime(tjbasin_raw['date'], format='%Y%m%d')
-## Create new series just for the precipitation data with 'timestamp' as index
-tjbasin_1day = tjbasin_raw['prcp']
-## Make tjbasin index a datetime index
-tjbasin_1day.index = tjbasin_raw['timestamp']
-## Resample to daily data (to get frequency set exactly for stress model)
-tjbasin_1day = tjbasin_1day.resample('D').sum()
-## Fill in missing values with 0
-tjbasin_1day = tjbasin_1day.fillna(0)
-## 7-day running TOTAL Precipitation
-tjbasin_7daysum = tjbasin_1day.rolling(window=7).sum()
-## 7-day running MEAN Precipitation
-tjbasin_7daymean = tjbasin_1day.rolling(window=7).mean()
-## 30-day running TOTAL Precipitation
-tjbasin_30daysum = tjbasin_1day.rolling(window=30).sum()
-## 30-day running MEAN Precipitation
-tjbasin_30daymean = tjbasin_1day.rolling(window=30).mean()
-
-#%% Save the tjbasin_precip data
-tjbasin_precip_storage = pd.HDFStore(path_to_tjbasin_precip)
-tjbasin_precip_storage['tjbasin_1day'] = tjbasin_1day
-tjbasin_precip_storage['tjbasin_7daysum'] = tjbasin_7daysum
-tjbasin_precip_storage['tjbasin_7daymean'] = tjbasin_7daymean
-tjbasin_precip_storage['tjbasin_30daysum'] = tjbasin_30daysum
-tjbasin_precip_storage['tjbasin_30daymean'] = tjbasin_30daymean
-tjbasin_precip_storage.close()
-
-#%% Load the tjbasin_precip data
-tjbasin_precip_storage = pd.HDFStore(path_to_tjbasin_precip)
-tjbasin_1day = tjbasin_precip_storage['tjbasin_1day']
-tjbasin_7daysum = tjbasin_precip_storage['tjbasin_7daysum']
-tjbasin_7daymean = tjbasin_precip_storage['tjbasin_7daymean']
-tjbasin_30daysum = tjbasin_precip_storage['tjbasin_30daysum']
-tjbasin_30daymean = tjbasin_precip_storage['tjbasin_30daymean']
-tjbasin_precip_storage.close()
-
-#%% Combine TJ and Otay Basin Precipitation Data
-combinedbasin_1day = tjbasin_1day + otaybasin_1day
-combinedbasin_7daysum = tjbasin_7daysum + otaybasin_7daysum
-combinedbasin_7daymean = tjbasin_7daymean + otaybasin_7daymean
-combinedbasin_30daysum = tjbasin_30daysum + otaybasin_30daysum
-combinedbasin_30daymean = tjbasin_30daymean + otaybasin_30daymean
-
-#%% Save the combinedbasin_precip data
-combinedbasin_precip_storage = pd.HDFStore(path_to_combinedbasin_precip)
-combinedbasin_precip_storage['combinedbasin_1day'] = combinedbasin_1day
-combinedbasin_precip_storage['combinedbasin_7daysum'] = combinedbasin_7daysum
-combinedbasin_precip_storage['combinedbasin_7daymean'] = combinedbasin_7daymean
-combinedbasin_precip_storage['combinedbasin_30daysum'] = combinedbasin_30daysum
-combinedbasin_precip_storage['combinedbasin_30daymean'] = combinedbasin_30daymean
-combinedbasin_precip_storage.close()
-
-#%% Load the combinedbasin_precip data
-combinedbasin_precip_storage = pd.HDFStore(path_to_combinedbasin_precip)
-combinedbasin_1day = combinedbasin_precip_storage['combinedbasin_1day']
-combinedbasin_7daysum = combinedbasin_precip_storage['combinedbasin_7daysum']
-combinedbasin_7daymean = combinedbasin_precip_storage['combinedbasin_7daymean']
-combinedbasin_30daysum = combinedbasin_precip_storage['combinedbasin_30daysum']
-combinedbasin_30daymean = combinedbasin_precip_storage['combinedbasin_30daymean']
-combinedbasin_precip_storage.close()
-
 #%% Create arrays of 64 days starting on 2021-12-15
 startdate = '2021-12-15'
 enddate = '2022-02-17'
@@ -207,41 +92,6 @@ enddate = '2022-02-17'
 
 # IB_precip_64days = IB_precip_15min[(IB_precip_15min.index >= startdate) & (IB_precip_15min.index < enddate)]
 IB_precip_64days = IB_precip_1day[(IB_precip_1day.index >= startdate) & (IB_precip_1day.index < enddate)]
-otaybasin_64days = otaybasin_1day[(otaybasin_1day.index >= startdate) & (otaybasin_1day.index < enddate)]
-tjbasin_64days = tjbasin_1day[(tjbasin_1day.index >= startdate) & (tjbasin_1day.index < enddate)]
-combinedbasin_64days = combinedbasin_1day[(combinedbasin_1day.index >= startdate) & (combinedbasin_1day.index < enddate)]
-#%%Plot all daily precipitation data
-%matplotlib qt
-fig, ax = plt.subplots(4, 1, figsize=(12, 12), sharex=True)
-ax[0].plot(IB_precip_1day, label='IB')
-ax[0].set_ylabel('Precipitation (mm)')
-ax[0].set_title('IB Rain Gauge')
-ax[1].plot(otaybasin_1day, label='Otay Basin')
-ax[1].set_ylabel('Precipitation (mm)')
-ax[1].set_title('Otay Basin')
-ax[2].plot(tjbasin_1day, label='TJ Basin')
-ax[2].set_ylabel('Precipitation (mm)')
-ax[2].set_title('TJ Basin')
-ax[3].plot(combinedbasin_1day, label='Combined Basin')
-ax[3].set_ylabel('Precipitation (mm)')
-ax[3].set_title('Combined Basin')
-plt.show()
-#%% Plot the 64-day precipitation data
-%matplotlib qt
-fig, ax = plt.subplots(4, 1, figsize=(12, 12), sharex=True)
-ax[0].plot(IB_precip_64days.index, IB_precip_64days, label='IB')
-ax[0].set_ylabel('Precipitation (mm)')
-ax[0].set_title('IB Rain Gauge')
-ax[1].plot(otaybasin_64days.index, otaybasin_64days, label='Otay Basin')
-ax[1].set_ylabel('Precipitation (mm)')
-ax[1].set_title('Otay Basin')
-ax[2].plot(tjbasin_64days.index, tjbasin_64days, label='TJ Basin')
-ax[2].set_ylabel('Precipitation (mm)')
-ax[2].set_title('TJ Basin')
-ax[3].plot(combinedbasin_64days.index, combinedbasin_64days, label='Combined Basin')
-ax[3].set_ylabel('Precipitation (mm)')
-ax[3].set_title('Combined Basin')
-plt.show()
 
 #%% Load the CMIP6 ensemble data
 with open(path_to_cmip6_ensemble, 'rb') as f:
@@ -328,7 +178,6 @@ precip_2100 = pd.DataFrame(index=pd.date_range(start='2003-10-01', end='2100-08-
 ## Choose precipitation data to use for historical data
 precip_data = IB_precip_1hour #### HOURLY
 # precip_data = IB_precip_1day #### DAILY
-# precip_data = otaybasin_7daymean
 
 precip_hist = precip_data.loc['2003-10-01':'2024-09-30'].copy()
 
