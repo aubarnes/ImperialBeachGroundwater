@@ -20,18 +20,18 @@ import matplotlib.dates as mdates
 import matplotlib.patheffects as pe
 
 ## Groundwater table
-path_to_gwt_seacoast = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/seacoast_20240514_1124_QC.h5'
-path_to_NTR_seacoast = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/seacoast_tide/seacoast_NTR.h5'
-path_to_gwt_fifthgrove = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/fifthgrove_20240514_1124_QC.h5'
-path_to_gwt_pubworks = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/pubworks_20240514_1435_QC.h5'
-path_to_gwt_eleventhebony = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/eleventhebony_20240514_1124_QC.h5'
+path_to_gwt_seacoast = '../data/seacoast_20240514_1124_QC.h5'
+path_to_NTR_seacoast = '../data/seacoast_tide/seacoast_NTR.h5'
+path_to_gwt_fifthgrove = '../data/fifthgrove_20240514_1124_QC.h5'
+path_to_gwt_pubworks = '../data/pubworks_20240514_1435_QC.h5'
+path_to_gwt_eleventhebony = '../data/eleventhebony_20240514_1124_QC.h5'
 
 ## Tide gauge
-path_to_ljtide = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljtide_1924.h5'
-path_to_ljntr_hindcast = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljntr_hindcast.h5'
+path_to_ljtide = '../data/ljtide_1924.h5'
+path_to_ljntr_hindcast = '../data/ljntr_hindcast.h5'
 
 ## Precipitation
-path_to_IB_precip = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/precip_IB/IB_precip.h5'
+path_to_IB_precip = '../data/precip_IB/IB_precip.h5'
 
 #%% Load Groundwater table data
 ## Load Seacoast
