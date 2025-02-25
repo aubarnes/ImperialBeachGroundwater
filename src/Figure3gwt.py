@@ -1,12 +1,12 @@
 """
-Figure X: Groundwater table measurements
-4 subplots:
+Figure 3: Groundwater table measurements
+3 subplots:
 1) Hourly average groundwater table measurements
 For Seacoast, include cosine-Lanczos filtered data
-2) Hourly average groundwater table measurements relative to local land surface
-3) La Jolla tide gauge hourly average
+La Jolla tide gauge hourly average
 Include cosine-Lanczos filtered data
-4) Daily Precipitation from TJRTLMET station
+2) Hourly average groundwater table measurements relative to local land surface
+3) Daily Precipitation from TJRTLMET station
 
 November 2024
 Austin Barnes
@@ -20,18 +20,18 @@ import matplotlib.dates as mdates
 import matplotlib.patheffects as pe
 
 ## Groundwater table
-path_to_gwt_seacoast = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/seacoast_20240514_1124_QC.h5'
-path_to_NTR_seacoast = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/seacoast_NTR.h5'
-path_to_gwt_fifthgrove = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/fifthgrove_20240514_1124_QC.h5'
-path_to_gwt_pubworks = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/pubworks_20240514_1435_QC.h5'
-path_to_gwt_eleventhebony = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/eleventhebony_20240514_1124_QC.h5'
+path_to_gwt_seacoast = '../data/seacoast_20240514_1124_QC.h5'
+path_to_NTR_seacoast = '../data/seacoast_NTR.h5'
+path_to_gwt_fifthgrove = '../data/fifthgrove_20240514_1124_QC.h5'
+path_to_gwt_pubworks = '../data/pubworks_20240514_1435_QC.h5'
+path_to_gwt_eleventhebony = '../data/eleventhebony_20240514_1124_QC.h5'
 
 ## Tide gauge
-path_to_ljtide = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljtide.h5'
-path_to_ntr_dailymax_hindcast = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljtide_dailymax_hindcast.h5'
+path_to_ljtide = '../data/external/ljtide.h5'
+path_to_ntr_dailymax_hindcast = '../data/external/ljtide_dailymax_hindcast.h5'
 
 ## Precipitation
-path_to_IB_precip = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/precip_IB/IB_precip.h5'
+path_to_IB_precip = '../data/external/IB_precip.h5'
 
 #%% Load Groundwater table data
 ## Load Seacoast
@@ -70,60 +70,6 @@ IB_precip_30daysum = IB_precip_storage['IB_precip_30daysum']
 IB_precip_30daymean = IB_precip_storage['IB_precip_30daymean']
 IB_precip_storage.close()
 
-#%% Create Figure, 4 subplots
-## 1) Hourly average groundwater table measurements
-## For Seacoast, include cosine-Lanczos filtered data
-## 2) Hourly average groundwater table measurements relative to local land surface
-##3) La Jolla tide gauge hourly average
-##Include cosine-Lanczos filtered data
-##4) Daily Precipitation from TJRTLMET station
-%matplotlib qt
-
-fontsize = 18
-alpha = 1.0
-
-fig, axs = plt.subplots(4, 1, sharex=True, figsize=(12, 10))
-
-## 1) Hourly average groundwater table measurements
-## For Seacoast, include cosine-Lanczos filtered data
-axs[0].plot(seacoast_hourly['Timestamps'], seacoast_hourly['NAVD88'], label='Seacoast', alpha=alpha, color='C0')
-axs[0].plot(fifthgrove_hourly['Timestamps'], fifthgrove_hourly['NAVD88'], label='Well 2', alpha=alpha, color='C1')
-axs[0].plot(pubworks_hourly['Timestamps'], pubworks_hourly['NAVD88'], label='Well 3', alpha=alpha, color='C2')
-axs[0].plot(eleventhebony_hourly['Timestamps'], eleventhebony_hourly['NAVD88'], label='Well 4', alpha=alpha, color='blueviolet')
-axs[0].plot(NTR_seacoast, label='Seacoast NTR', alpha=alpha, color='blue')
-# axs[0].legend(fontsize = fontsize - 4)
-# axs[0].legend(fontsize = fontsize - 4, loc='lower left', bbox_to_anchor=(0.01, 0.3), fancybox=True, shadow=True, ncol=5)
-axs[0].set_ylabel('NAVD88 (m)', fontsize = fontsize)
-axs[0].set_title('Groundwater Table Levels', fontsize = fontsize)
-
-## 2) Hourly average groundwater table measurements relative to local land surface
-axs[1].plot(seacoast_hourly['Timestamps'], seacoast_hourly['landsurf'], label='Seacoast', alpha=alpha, color='C0')
-axs[1].plot(fifthgrove_hourly['Timestamps'], fifthgrove_hourly['landsurf'], label='Well 2', alpha=alpha, color='C1')
-axs[1].plot(pubworks_hourly['Timestamps'], pubworks_hourly['landsurf'], label='Well 3', alpha=alpha, color='C2')
-axs[1].plot(eleventhebony_hourly['Timestamps'], eleventhebony_hourly['landsurf'], label='Well 4', alpha=alpha, color='blueviolet')
-## Add in a horizontal line at y = 0
-axs[1].axhline(y=0, color='black', linestyle='-', alpha=alpha)
-axs[1].set_ylabel('Relative to\nlocal land surface (m)', fontsize = fontsize)
-axs[1].set_title('Depth to Groundwater', fontsize = fontsize)
-
-## 3) La Jolla tide gauge hourly average
-## Include cosine-Lanczos filtered data
-axs[2].plot(lj_tide, label='Hourly Average', linestyle='-', alpha=0.5, color='grey')
-axs[2].plot(ntr_dailymax_hindcast, label='Non-tidal sea level', linestyle='--', alpha=alpha, color='black')
-axs[2].legend(fontsize = fontsize-4)
-axs[2].set_ylabel('(m)', fontsize = fontsize)
-axs[2].set_title('La Jolla Tide Gauge', fontsize = fontsize)
-
-## 4) Daily Precipitation from TJRTLMET station
-axs[3].plot(IB_precip_1day, label='Daily', color='black')
-axs[3].set_ylabel('(mm)', fontsize = fontsize)
-axs[3].set_title('Daily Precipitation', fontsize = fontsize)
-
-## Formatting
-plt.xlim(pd.Timestamp('2021-12-01'), pd.Timestamp('2024-06-01'))
-plt.gcf().autofmt_xdate()
-fig.tight_layout()
-plt.show()
 #%% Create Figure, 3 subplots
 ## 1) Hourly average groundwater table measurements
 ## For Seacoast, include cosine-Lanczos filtered data
@@ -221,30 +167,3 @@ print(seacoast_hourly['Timestamps'].iloc[np.where(seacoast_hourly==seacoast_hour
 
 ## Determine tide at that time
 print(lj_tide.loc[seacoast_hourly['Timestamps'].iloc[np.where(seacoast_hourly==seacoast_hourly['landsurf'].max())[0][0]]])
-
-#%% Determine correlation between seacoast non-tidal residual and la jolla non-tidal residual
-seacoast_NTR = NTR_seacoast.tz_localize('UTC')
-seacoast_NTR.dropna(inplace=True)
-lj_NTR = ntr_dailymax_hindcast
-lj_NTR = lj_NTR.loc[seacoast_NTR.index]
-lj_NTR = lj_NTR.dropna()
-
-r_squared = np.corrcoef(seacoast_NTR, lj_NTR)[0, 1]**2
-correlation = np.corrcoef(seacoast_NTR, lj_NTR)
-print(correlation, r_squared)
-
-## Determine lag for maximum correlation
-max_lag = 5
-r_squared = np.zeros(max_lag)
-for lag in range(max_lag):
-    shifted_lj_NTR = lj_NTR.shift(lag).dropna()
-    common_index = seacoast_NTR.index.intersection(shifted_lj_NTR.index)
-    if len(common_index) > 0:
-        r_squared[lag] = np.corrcoef(seacoast_NTR.loc[common_index], shifted_lj_NTR.loc[common_index])[0, 1]**2
-    else:
-        r_squared[lag] = np.nan
-print(r_squared)
-print(np.nanargmax(r_squared))
-
-
-# %%
