@@ -1,11 +1,10 @@
 """
-Figure X: Groundwater table measurements
-4 subplots:
+Figure 3: Groundwater table measurements
+3 subplots:
 1) Hourly average groundwater table measurements
 For Seacoast, include cosine-Lanczos filtered data
+La Jolla tide gauge hourly average + NTR
 2) Hourly average groundwater table measurements relative to local land surface
-3) La Jolla tide gauge hourly average
-Include cosine-Lanczos filtered data
 4) Daily Precipitation from TJRTLMET station
 
 November 2024
