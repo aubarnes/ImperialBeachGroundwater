@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import pylab as P
+import pickle
 %matplotlib
 
 ## Outputs
@@ -127,7 +128,6 @@ print("Values in time2 but not in time1:", unique_to_time2)
 
 #%%
 ## Save the data dictionary to a file
-import pickle
 
 with open(path_to_cmip6_ensemble, 'wb') as f:
     pickle.dump(data_dict, f)
