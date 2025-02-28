@@ -18,6 +18,7 @@ import pastas as ps
 import matplotlib.dates as mdates
 import matplotlib.patheffects as pe
 from scipy.stats import norm
+import pickle
 
 ## Values derived from 2016 DEM
 roadelevation_sseacoast = 1.9 # meters (1.846 according to GPS at well location)
@@ -87,7 +88,6 @@ ljtide_2100 = pd.read_hdf(path_to_ljtide_2100)
 #%% Hindcast: Load the LJ NTR Hindcast
 ljntr_hindcast = pd.read_hdf(path_to_ljntr_hindcast)
 #%% Projections: Load SLR Curve Interpolation Functions
-import pickle
 with open(path_to_slr_interp, 'rb') as f:
     slr_interp = pickle.load(f)
 
