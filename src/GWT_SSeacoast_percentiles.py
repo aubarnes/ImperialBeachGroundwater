@@ -28,21 +28,21 @@ roadelevation_palm = 2.0 # meters (approx low from DEM)
 roadelevation_carnation = 1.5 # meters (approx low from DEM)
 
 ## Observations
-path_to_gwt_observations = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/seacoast_20240514_1124_QC.h5'
-path_to_ljtide_full = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljtide_1924.h5'
+path_to_gwt_observations = '../data/seacoast_20240514_1124_QC.h5'
+path_to_ljtide_full = '../data/LJ_tide_data/ljtide_1924.h5'
 
 ## Used in Hincast & Projections
-path_to_ljtide_2100 = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljtide_2100.h5'
-path_to_ETo_2100 = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/ETo/ETo_spatial/ETo_2100.h5'
-path_to_precip = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/precip_IB/precip_2100.h5'
+path_to_ljtide_2100 = '../data/LJ_tide_data/ljtide_2100.h5'
+path_to_ETo_2100 = '../data/ETo/ETo_spatial/ETo_2100.h5'
+path_to_precip = '../data/precip_IB/precip_2100.h5'
 
 ## Hindcast Only
-path_to_ljntr_hindcast = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljntr_hindcast.h5'
+path_to_ljntr_hindcast = '../data/LJ_tide_data/ljntr_hindcast.h5'
 
 ## Projections Only
-path_to_slr_interp = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/slr/slr_interp.pkl'
-path_to_ljntr_ensemble = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljntr_ensemble.h5'
-path_to_cmip6_ensemble = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/cmip6_ensemble.pkl'
+path_to_slr_interp = '../data/slr/slr_interp.pkl'
+path_to_ljntr_ensemble = '../data/LJ_tide_data/ljntr_ensemble.h5'
+path_to_cmip6_ensemble = '../data/cmip6_ensemble.pkl'
 
 #%% Observations: Load SSeacoast gwt obs and full LJ tide gauge
 gwt_obs_data = pd.read_hdf(path_to_gwt_observations)
