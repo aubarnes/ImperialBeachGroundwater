@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 %matplotlib
 import numpy as np
 
-path_to_seacoastobs = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/seacoast_20240514_1124_QC.h5'
-path_to_seacoast_NTR = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/seacoast_tide/seacoast_NTR.h5'
+path_to_seacoastobs = '../data/seacoast_20240514_1124_QC.h5'
+path_to_seacoast_NTR = '../data/seacoast_NTR.h5'
 
 #%% FUNCTION: Cosine-Lanczos Squared Filter
 def cosine_lanczos_squared_filter(cutoff_hours, fs, N=None):
