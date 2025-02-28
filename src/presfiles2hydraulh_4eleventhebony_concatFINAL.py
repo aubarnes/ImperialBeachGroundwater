@@ -19,6 +19,9 @@ from os import path
 # Directory where data exists
 directory = '../data/'
 
+atmofile = '20240516' # Atmospheric data file end date
+#%%
+
 # Customize what files to load
 sensor = '207494'
 in_files = [sensor+'_20220420_1134', #original QC
