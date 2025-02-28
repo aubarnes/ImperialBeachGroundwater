@@ -14,12 +14,12 @@ import numpy as np
 import pickle
 
 ## Paths for loading data
-path_to_TJRTLMET = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/precip_IB/TJRTLMET_full.csv'
-path_to_cmip6_ensemble = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/cmip6_ensemble.pkl'
+path_to_TJRTLMET = '../data/TJRTLMET_full.csv'
+path_to_cmip6_ensemble = '../data/cmip6_ensemble.pkl'
 
 ## Paths for saving data
-path_to_IB_precip = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/precip_IB/IB_precip.h5'
-path_to_precip_2100 = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/precip_IB/precip_2100.h5'
+path_to_IB_precip = '../data/IB_precip.h5'
+path_to_precip_2100 = '../data/precip_2100.h5'
 
 #%% Load and prepare TJRTLMET precipitation data
 
