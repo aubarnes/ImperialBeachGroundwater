@@ -21,6 +21,14 @@ import matplotlib.pyplot as plt
 import requests
 import datetime as dt
 from scipy.interpolate import CubicSpline
+import pickle
+
+## Observations
+path_to_ljtide_full = '../data/LJ_tide_data/ljtide_1924.h5'
+## SLR Projections
+path_to_ljslritf = '../data/lj_slr_itf.csv'
+## Output
+path_to_slr_interp = '../data/slr/slr_interp.pkl'
 
 #%% Function: getTides - get tide data from NOAA
 def getTides(date1, date2, station_id = 9410230, product = 'hourly_height', datum = 'NAVD', tz='GMT', units='metric', format='json'):
@@ -87,14 +95,14 @@ date2 = dt.datetime(2000,12,31,tzinfo=dt.timezone.utc)
 
 ## See if ljtide_1924.h5 exists, if it does, load; if not - call getTides
 try:
-    ljtide_full = pd.read_hdf('/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljtide_1924.h5', 'ljtide')
+    ljtide_full = pd.read_hdf(path_to_ljtide_full, 'ljtide')
     print('Loaded La Jolla Tide Gauge Data from ljtide_1924.h5')
 except:
     print('La Jolla Tide Gauge Data not found, calling getTides...')
     ljtide_raw = getTides(date1, date2)
     ljtide_full = ljtide_raw[ljtide_raw.first_valid_index():]
     ## Save ljtide_raw to ljtide_1924.h5
-    ljtide_full.to_hdf('/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljtide_1924.h5', 'ljtide')
+    ljtide_full.to_hdf(path_to_ljtide_full, 'ljtide')
     print('Saved La Jolla Tide Gauge Data to ljtide_1924.h5')
 
 ## La Jolla Tide Gauge 2000 average water level (NAVD88)
@@ -112,7 +120,7 @@ ljtide_annualmean_NAVD88 = ljtide_full.resample('AS').mean()
 
 ## Import SLR projection data for scenarios
 ## Projections are relative to 2000 annual average MSL at La Jolla Tide Gauge
-slr_data = pd.read_csv('/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/slr/lj_slr_itf.csv')
+slr_data = pd.read_csv(path_to_ljslritf)
 ## Create new dataframe that is slr_data from columns 3 to end
 slr_projections = slr_data.iloc[:,3:]
 ## Divide all values in columns 2 to end by 1000 to convert from mm to m
@@ -241,19 +249,18 @@ ax.tick_params(axis='both', which='major', labelsize=fontsize)
 plt.show()
 
 #%% Save interp functions to file
-import pickle
 slr_interp = {'low_17p':slr_low_17p_interp, 'low_50p':slr_low_50p_interp, 'low_83p':slr_low_83p_interp,
                 'intlow_17p':slr_intlow_17p_interp, 'intlow_50p':slr_intlow_50p_interp, 'intlow_83p':slr_intlow_83p_interp,
                 'int_17p':slr_int_17p_interp, 'int_50p':slr_int_50p_interp, 'int_83p':slr_int_83p_interp,
                 'inthigh_17p':slr_inthigh_17p_interp, 'inthigh_50p':slr_inthigh_50p_interp, 'inthigh_83p':slr_inthigh_83p_interp,
                 'high_17p':slr_high_17p_interp, 'high_50p':slr_high_50p_interp, 'high_83p':slr_high_83p_interp}
 
-with open('/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/slr/slr_interp.pkl', 'wb') as f:
+with open(path_to_slr_interp, 'wb') as f:
     pickle.dump(slr_interp, f)
 
 #%% Load interp functions from file
 import pickle
-with open('/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/slr/slr_interp.pkl', 'rb') as f:
+with open(path_to_slr_interp, 'rb') as f:
     slr_interp = pickle.load(f)
 
 slr_low_17p_interp = slr_interp['low_17p']
