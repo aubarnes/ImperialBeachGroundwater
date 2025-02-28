@@ -113,51 +113,6 @@ ntr_full_series = pd.Series(ntr_full, index=ljtide_full.index)
 # ljtide_filt_series[:5*24] = np.nan
 # ljtide_filt_series[-5*24:] = np.nan
 
-#%% Compute and plot the decorrelation time scale
-
-def compute_decorrelation_timescale(series):
-    # Compute the autocorrelation function
-    autocorr = np.correlate(series - np.mean(series), series - np.mean(series), mode='full')
-    autocorr = autocorr[autocorr.size // 2:]  # Keep only the positive lags
-    autocorr /= autocorr[0]  # Normalize
-
-    # Find the decorrelation timescale (integral of the autocorrelation function)
-    decorrelation_timescale = np.sum(autocorr)
-    return decorrelation_timescale, autocorr
-
-## Create smaller series ntr_2000_2010
-ntr_2000_2010 = ntr_full_series['2000-01-01':'2010-12-31']
-
-# Assuming ntr_full_series is your pandas Series
-# If you haven't loaded it yet, you would do so here
-# ntr_full_series = pd.read_csv('your_data_file.csv', parse_dates=['date'], index_col='date')['ntr']
-
-# Compute the decorrelation timescale
-decorrelation_timescale, autocorr = compute_decorrelation_timescale(ntr_2000_2010.values)
-
-autocorr_time = np.arange(0, len(autocorr))/24
-
-# Plot the autocorrelation function
-plt.figure(figsize=(10, 6))
-plt.plot(autocorr_time,autocorr)
-plt.axhline(y=1/np.e, color='r', linestyle='--', label='1/e threshold')
-plt.title('Autocorrelation Function')
-plt.xlabel('Lag (days)')
-plt.ylabel('Autocorrelation')
-plt.legend()
-
-# Find the lag where autocorrelation drops below 1/e
-e_folding_time = np.where(autocorr < 1/np.e)[0][0]
-
-plt.text(0.7, 0.9, f'Decorrelation timescale: {decorrelation_timescale:.2f}', 
-         transform=plt.gca().transAxes)
-plt.text(0.7, 0.85, f'e-folding time: {e_folding_time}', 
-         transform=plt.gca().transAxes)
-
-plt.show()
-
-print(f"Decorrelation timescale: {decorrelation_timescale:.2f}")
-print(f"e-folding time: {e_folding_time}")
 
 #%% Plot the filtered tide data
 %matplotlib qt

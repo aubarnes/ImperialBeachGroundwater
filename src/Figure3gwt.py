@@ -20,7 +20,7 @@ import matplotlib.patheffects as pe
 
 ## Groundwater table
 path_to_gwt_seacoast = '../data/seacoast_20240514_1124_QC.h5'
-path_to_NTR_seacoast = '../data/seacoast_tide/seacoast_NTR.h5'
+path_to_NTR_seacoast = '../data/seacoast_NTR.h5'
 path_to_gwt_fifthgrove = '../data/fifthgrove_20240514_1124_QC.h5'
 path_to_gwt_pubworks = '../data/pubworks_20240514_1435_QC.h5'
 path_to_gwt_eleventhebony = '../data/eleventhebony_20240514_1124_QC.h5'
@@ -30,7 +30,7 @@ path_to_ljtide = '../data/ljtide_1924.h5'
 path_to_ljntr_hindcast = '../data/ljntr_hindcast.h5'
 
 ## Precipitation
-path_to_IB_precip = '../data/precip_IB/IB_precip.h5'
+path_to_IB_precip = '../data/IB_precip.h5'
 
 #%% Load Groundwater table data
 ## Load Seacoast

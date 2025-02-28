@@ -30,19 +30,19 @@ roadelevation_carnation = 1.5 # meters (approx low from DEM)
 
 ## Observations
 path_to_gwt_observations = '../data/seacoast_20240514_1124_QC.h5'
-path_to_ljtide_full = '../data/LJ_tide_data/ljtide_1924.h5'
+path_to_ljtide_full = '../data/ljtide_1924.h5'
 
 ## Used in Hincast & Projections
-path_to_ljtide_2100 = '../data/LJ_tide_data/ljtide_2100.h5'
-path_to_ETo_2100 = '../data/ETo/ETo_spatial/ETo_2100.h5'
-path_to_precip = '../data/precip_IB/precip_2100.h5'
+path_to_ljtide_2100 = '../data/ljtide_2100.h5'
+path_to_ETo_2100 = '../data/ETo_2100.h5'
+path_to_precip = '../data/precip_2100.h5'
 
 ## Hindcast Only
-path_to_ljntr_hindcast = '../data/LJ_tide_data/ljntr_hindcast.h5'
+path_to_ljntr_hindcast = '../data/ljntr_hindcast.h5'
 
 ## Projections Only
-path_to_slr_interp = '../data/slr/slr_interp.pkl'
-path_to_ljntr_ensemble = '../data/LJ_tide_data/ljntr_ensemble.h5'
+path_to_slr_interp = '../data/slr_interp.pkl'
+path_to_ljntr_ensemble = '../data/ljntr_ensemble.h5'
 path_to_cmip6_ensemble = '../data/cmip6_ensemble.pkl'
 
 #%% Observations: Load SSeacoast gwt obs and full LJ tide gauge
@@ -491,27 +491,6 @@ data4comparison = gwt_NAVD88.tz_localize('UTC')
 hindcast_2003 = ml.simulate(tmin="2003-10-01",tmax="2024-09-30T23:00:00",freq=hindcast_freq)
 ## Localize to UTC time zone
 hindcast_2003 = hindcast_2003.tz_localize('UTC')
-
-## Plot the Full calibration period, hindcast, and residuals
-%matplotlib
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 8), sharex=True, gridspec_kw={'height_ratios': [2,1]})
-ax1.plot(hindcast_2003, label='Hindcast')
-ax1.plot(data4comparison, label='Seacoast Data',alpha=0.5)
-## Shade in the calibration period
-ax1.axvspan(pd.to_datetime(calib_start), pd.to_datetime(calib_end), color='gray', alpha=0.2)
-ax1.text(pd.to_datetime(calib_start), 0.45, 'Calibration Period', verticalalignment='top', horizontalalignment='left', color='k', fontsize=12)
-ax1.set_ylabel('NAVD88 (m)', fontsize=12)
-ax1.set_title('Seacoast Full Model vs. Data')
-ax1.legend()
-## Second subplot
-ax2.scatter((data4comparison - hindcast_2003).index,data4comparison - hindcast_2003,color='k', label='Residual')
-# ax3 = ax2.twinx()
-# ax3.plot(R2)
-ax2.grid(which='both', ls='dotted')
-ax2.set_ylabel('(m)', fontsize=12)
-ax2.set_title('Model Residuals')
-## Restrict x-axis
-plt.show()
 #%% Projections: Create ensemble of non-tidal residuals for 2024-2100
 ml.settings["freq"] = "1H"
 
@@ -694,136 +673,6 @@ ntr_slronly_high = ml.get_contribution("ljntr", tmin="2024-10-01", tmax="2100-10
 offset_high = stress_ntr_high - ntr_slronly_high
 offset_high = offset_high - offset_high.min()
 offset_high = offset_high.drop(offset_high.index[-1])
-
-# stress_ntr_low_17p = slr_low_17p_2100
-# stress_ntr_low_17p = stress_ntr_low_17p.tz_localize(None)
-# ml.stressmodels['ljntr'] = ps.StressModel(
-#     stress=stress_ntr_low_17p,
-#     rfunc = ps.One(),
-#     name="ljntr_low_17p",
-#     settings="waterlevel")
-# model_slronly_low_17p = ml.simulate(warmup=warmupdays, tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_low_17p.index)
-# ntr_slronly_low_17p = ml.get_contribution("ljntr", tmin="2024-10-01", tmax="2100-10-01")
-# offset_low_17p = stress_ntr_low_17p - ntr_slronly_low_17p
-# offset_low_17p = offset_low_17p - offset_low_17p.min()
-# offset_low_17p = offset_low_17p.drop(offset_low_17p.index[-1])
-
-# stress_ntr_low_83p = slr_low_83p_2100
-# stress_ntr_low_83p = stress_ntr_low_83p.tz_localize(None)
-# ml.stressmodels['ljntr'] = ps.StressModel(
-#     stress=stress_ntr_low_83p,
-#     rfunc = ps.One(),
-#     name="ljntr_low_83p",
-#     settings="waterlevel")
-# model_slronly_low_83p = ml.simulate(warmup=warmupdays, tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_low_83p.index)
-# ntr_slronly_low_83p = ml.get_contribution("ljntr", tmin="2024-10-01", tmax="2100-10-01")
-# offset_low_83p = stress_ntr_low_83p - ntr_slronly_low_83p
-# offset_low_83p = offset_low_83p - offset_low_83p.min()
-# offset_low_83p = offset_low_83p.drop(offset_low_83p.index[-1])
-
-# stress_ntr_intlow_17p = slr_intlow_17p_2100
-# stress_ntr_intlow_17p = stress_ntr_intlow_17p.tz_localize(None)
-# ml.stressmodels['ljntr'] = ps.StressModel(
-#     stress=stress_ntr_intlow_17p,
-#     rfunc = ps.One(),
-#     name="ljntr_intlow_17p",
-#     settings="waterlevel")
-# model_slronly_intlow_17p = ml.simulate(warmup=warmupdays, tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_intlow_17p.index)
-# ntr_slronly_intlow_17p = ml.get_contribution("ljntr", tmin="2024-10-01", tmax="2100-10-01")
-# offset_intlow_17p = stress_ntr_intlow_17p - ntr_slronly_intlow_17p
-# offset_intlow_17p = offset_intlow_17p - offset_intlow_17p.min()
-# offset_intlow_17p = offset_intlow_17p.drop(offset_intlow_17p.index[-1])
-
-# stress_ntr_intlow_83p = slr_intlow_83p_2100
-# stress_ntr_intlow_83p = stress_ntr_intlow_83p.tz_localize(None)
-# ml.stressmodels['ljntr'] = ps.StressModel(
-#     stress=stress_ntr_intlow_83p,
-#     rfunc = ps.One(),
-#     name="ljntr_intlow_83p",
-#     settings="waterlevel")
-# model_slronly_intlow_83p = ml.simulate(warmup=warmupdays, tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_intlow_83p.index)
-# ntr_slronly_intlow_83p = ml.get_contribution("ljntr", tmin="2024-10-01", tmax="2100-10-01")
-# offset_intlow_83p = stress_ntr_intlow_83p - ntr_slronly_intlow_83p
-# offset_intlow_83p = offset_intlow_83p - offset_intlow_83p.min()
-# offset_intlow_83p = offset_intlow_83p.drop(offset_intlow_83p.index[-1])
-
-# stress_ntr_int_17p = slr_int_17p_2100
-# stress_ntr_int_17p = stress_ntr_int_17p.tz_localize(None)
-# ml.stressmodels['ljntr'] = ps.StressModel(
-#     stress=stress_ntr_int_17p,
-#     rfunc = ps.One(),
-#     name="ljntr_int_17p",
-#     settings="waterlevel")
-# model_slronly_int_17p = ml.simulate(warmup=warmupdays, tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_int_17p.index)
-# ntr_slronly_int_17p = ml.get_contribution("ljntr", tmin="2024-10-01", tmax="2100-10-01")
-# offset_int_17p = stress_ntr_int_17p - ntr_slronly_int_17p
-# offset_int_17p = offset_int_17p - offset_int_17p.min()
-# offset_int_17p = offset_int_17p.drop(offset_int_17p.index[-1])
-
-# stress_ntr_int_83p = slr_int_83p_2100
-# stress_ntr_int_83p = stress_ntr_int_83p.tz_localize(None)
-# ml.stressmodels['ljntr'] = ps.StressModel(
-#     stress=stress_ntr_int_83p,
-#     rfunc = ps.One(),
-#     name="ljntr_int_83p",
-#     settings="waterlevel")
-# model_slronly_int_83p = ml.simulate(warmup=warmupdays, tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_int_83p.index)
-# ntr_slronly_int_83p = ml.get_contribution("ljntr", tmin="2024-10-01", tmax="2100-10-01")
-# offset_int_83p = stress_ntr_int_83p - ntr_slronly_int_83p
-# offset_int_83p = offset_int_83p - offset_int_83p.min()
-# offset_int_83p = offset_int_83p.drop(offset_int_83p.index[-1])
-
-# stress_ntr_inthigh_17p = slr_inthigh_17p_2100
-# stress_ntr_inthigh_17p = stress_ntr_inthigh_17p.tz_localize(None)
-# ml.stressmodels['ljntr'] = ps.StressModel(
-#     stress=stress_ntr_inthigh_17p,
-#     rfunc = ps.One(),
-#     name="ljntr_inthigh_17p",
-#     settings="waterlevel")
-# model_slronly_inthigh_17p = ml.simulate(warmup=warmupdays, tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_inthigh_17p.index)
-# ntr_slronly_inthigh_17p = ml.get_contribution("ljntr", tmin="2024-10-01", tmax="2100-10-01")
-# offset_inthigh_17p = stress_ntr_inthigh_17p - ntr_slronly_inthigh_17p
-# offset_inthigh_17p = offset_inthigh_17p - offset_inthigh_17p.min()
-# offset_inthigh_17p = offset_inthigh_17p.drop(offset_inthigh_17p.index[-1])
-
-# stress_ntr_inthigh_83p = slr_inthigh_83p_2100
-# stress_ntr_inthigh_83p = stress_ntr_inthigh_83p.tz_localize(None)
-# ml.stressmodels['ljntr'] = ps.StressModel(
-#     stress=stress_ntr_inthigh_83p,
-#     rfunc = ps.One(),
-#     name="ljntr_inthigh_83p",
-#     settings="waterlevel")
-# model_slronly_inthigh_83p = ml.simulate(warmup=warmupdays, tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_inthigh_83p.index)
-# ntr_slronly_inthigh_83p = ml.get_contribution("ljntr", tmin="2024-10-01", tmax="2100-10-01")
-# offset_inthigh_83p = stress_ntr_inthigh_83p - ntr_slronly_inthigh_83p
-# offset_inthigh_83p = offset_inthigh_83p - offset_inthigh_83p.min()
-# offset_inthigh_83p = offset_inthigh_83p.drop(offset_inthigh_83p.index[-1])
-
-# stress_ntr_high_17p = slr_high_17p_2100
-# stress_ntr_high_17p = stress_ntr_high_17p.tz_localize(None)
-# ml.stressmodels['ljntr'] = ps.StressModel(
-#     stress=stress_ntr_high_17p,
-#     rfunc = ps.One(),
-#     name="ljntr_high_17p",
-#     settings="waterlevel")
-# model_slronly_high_17p = ml.simulate(warmup=warmupdays, tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_high_17p.index)
-# ntr_slronly_high_17p = ml.get_contribution("ljntr", tmin="2024-10-01", tmax="2100-10-01")
-# offset_high_17p = stress_ntr_high_17p - ntr_slronly_high_17p
-# offset_high_17p = offset_high_17p - offset_high_17p.min()
-# offset_high_17p = offset_high_17p.drop(offset_high_17p.index[-1])
-
-# stress_ntr_high_83p = slr_high_83p_2100
-# stress_ntr_high_83p = stress_ntr_high_83p.tz_localize(None)
-# ml.stressmodels['ljntr'] = ps.StressModel(
-#     stress=stress_ntr_high_83p,
-#     rfunc = ps.One(),
-#     name="ljntr_high_83p",
-#     settings="waterlevel")
-# model_slronly_high_83p = ml.simulate(warmup=warmupdays, tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_high_83p.index)
-# ntr_slronly_high_83p = ml.get_contribution("ljntr", tmin="2024-10-01", tmax="2100-10-01")
-# offset_high_83p = stress_ntr_high_83p - ntr_slronly_high_83p
-# offset_high_83p = offset_high_83p - offset_high_83p.min()
-# offset_high_83p = offset_high_83p.drop(offset_high_83p.index[-1])
 
 #%% Projections: Run model for realizations of projected groundwater table (Freq = 1H)
 
@@ -3684,15 +3533,6 @@ ax[4].bar(years, winter_night + winter_both, label='Winter Night', color='indigo
 ax[4].bar(years, winter_day + winter_both, bottom=winter_night + winter_both, label='Winter Day', color='mediumorchid')
 ax[4].bar(years, summer_night + summer_both, bottom=winter_night + winter_day + 2*winter_both, label='Summer Night', color='mediumblue')
 ax[4].bar(years, summer_day + summer_both, bottom=winter_night + winter_day + 2*winter_both + summer_night + summer_both, label='Summer Day', color='deepskyblue')
-# Add error bars for standard deviation
-# ax[4].errorbar(years, winter_night + winter_both, 
-#                yerr=combined_seasonal_results['std_winter_night_flood']+combined_seasonal_results['std_winter_both_flood'], fmt='none', ecolor='plum', capsize=2)
-# ax[4].errorbar(years, winter_night + winter_day + 2*winter_both, 
-#                yerr=combined_seasonal_results['std_winter_day_flood']+combined_seasonal_results['std_winter_both_flood'], fmt='none', ecolor='plum', capsize=2)
-# ax[4].errorbar(years, winter_night + winter_day + 2*winter_both + summer_night + summer_both, 
-#                yerr=combined_seasonal_results['std_summer_night_flood']+combined_seasonal_results['std_summer_both_flood'], fmt='none', ecolor='lightcyan', capsize=2)
-# ax[4].errorbar(years, winter_night + winter_day + 2*winter_both + summer_night + summer_day + 2*summer_both, 
-#                yerr=combined_seasonal_results['std_summer_day_flood']+combined_seasonal_results['std_summer_both_flood'], fmt='none', ecolor='blue', capsize=2)
 
 # Set labels and title for stacked bar plot
 ax[4].set_ylabel('Emergence Events\nBy Season & TOD', fontsize=fontsize)
@@ -3829,9 +3669,6 @@ for realization in gwt_int.columns:
     full_results_int.append(pd.DataFrame(realization_results))
     seasonal_results.append(pd.DataFrame(realization_seasonal_results))
 
-## Compute metrics from the full results by year
-## Compute the minimum, maximum, 25th, 50th, and 75th percentiles
-
 # Ensure all final results are numeric
 for df in full_results_int:
     df.apply(pd.to_numeric, errors='coerce')
@@ -3957,11 +3794,6 @@ boxplot_duration = [
 fontsize = 14
 fig, ax = plt.subplots(5, 1, figsize=(12, 14), sharex=True)
 
-# ## OPTION 1: Plot Mean Flood Depth
-# ax[0].bar(ponding_depths_int['year'], ponding_depths_int['mean_flood_depth'], yerr=ponding_depths_int['std_flood_depth'], color='blue', capsize=3)
-# ax[0].set_ylabel('Mean Flood\nDepth (m)', fontsize=fontsize)
-
-# ## OPTION 2: Box & Whisker plot for ponding_depths_int['flood_depth_min', 'flood_depth_25th', 'flood_depth_50th', 'flood_depth_75th', 'flood_depth_max']
 # Create custom boxplots using the summary stats
 for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_depth):
     ax[0].plot([ponding_depths_int['year'][i], ponding_depths_int['year'][i]], [min_val, max_val], color='black')  # Whiskers
@@ -3977,11 +3809,6 @@ ax[0].text(2020.5, 0.27, 'Safe Limit for\nEmergency Vehicles', color='k', fontsi
 # ax[0].set_title('D0038\nIntermediate Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
 ax[0].set_title('Cortez Ave\nIntermediate Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
 
-# ## OPTION 1: Plot the average hours per event
-# [ax[1].bar(event_durations_int['year'], event_durations_int['mean_avg_hours_per_event'], yerr=event_durations_int['std_avg_hours_per_event'], color='blue', capsize=3)
-# [ax[1].set_ylabel('Avg Flood\nDuration (hr)', fontsize=fontsize)
-
-## OPTION 2: Box & Whisker plot for event_durations_int['duration_min', 'duration_25th', 'duration_50th', 'duration_75th', 'duration_max']
 # Create custom boxplots using the summary stats
 for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_duration):
     ax[1].plot([event_durations_int['year'][i], event_durations_int['year'][i]], [min_val, max_val], color='black')  # Whiskers
@@ -3989,12 +3816,6 @@ for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_duration):
     ax[1].plot([event_durations_int['year'][i], event_durations_int['year'][i]], [q1, q3], color='white', linewidth=5)  # Interquartile range (fill)
     ax[1].plot(event_durations_int['year'][i], median, 'k_', markersize=7)  # Median line
 ax[1].set_ylabel('Duration of\nEvents (hr)', fontsize=fontsize)
-## OPTION 2b: boxplot using boxplot matplotlib function (need all data for boxplot to compute stats on)
-# bp = ax[1].boxplot(boxplot_data, positions=event_durations_int['year'], widths=0.6)
-# Customize the boxplot appearance
-# for element in ['boxes', 'whiskers','means', 'medians', 'caps']:
-#     plt.setp(bp[element], color='black')
-# plt.setp(bp['fliers'], marker='o', markersize=3, markerfacecolor='red')
 ax[1].set_yticks(np.arange(0, 11, 5))
 
 # Plot the number of days with flooding
@@ -4018,32 +3839,11 @@ winter_day = combined_seasonal_results['mean_winter_day_flood']
 winter_night = combined_seasonal_results['mean_winter_night_flood']
 winter_both = combined_seasonal_results['mean_winter_both_flood']
 
-# ## OPTION 1: Plot Day/Night/Both (units = # days)
-# ax[4].bar(years, summer_day, label='Summer Day', color='lightblue')
-# ax[4].bar(years, summer_night, bottom=summer_day, label='Summer Night', color='skyblue')
-# ax[4].bar(years, summer_both, bottom=summer_day + summer_night, label='Summer Both', color='deepskyblue')
-# ax[4].bar(years, winter_day, bottom=summer_day + summer_night + summer_both, label='Winter Day', color='lightcoral')
-# ax[4].bar(years, winter_night, bottom=summer_day + summer_night + summer_both + winter_day, label='Winter Night', color='indianred')
-# ax[4].bar(years, winter_both, bottom=summer_day + summer_night + summer_both + winter_day + winter_night, label='Winter Both', color='firebrick')
 
-## OPTION 2: Plot Day/Night (units = # events)
-# ax[4].bar(years, winter_night + winter_both, label='Winter Night', color='indigo')
-# ax[4].bar(years, winter_day + winter_both, bottom=winter_night + winter_both, label='Winter Day', color='plum')
-# ax[4].bar(years, summer_night + summer_both, bottom=winter_night + winter_day + 2*winter_both, label='Summer Night', color='royalblue')
-# ax[4].bar(years, summer_day + summer_both, bottom=winter_night + winter_day + 2*winter_both + summer_night + summer_both, label='Summer Day', color='deepskyblue')
 ax[4].bar(years, winter_night + winter_both, label='Winter Night', color='indigo')
 ax[4].bar(years, winter_day + winter_both, bottom=winter_night + winter_both, label='Winter Day', color='mediumorchid')
 ax[4].bar(years, summer_night + summer_both, bottom=winter_night + winter_day + 2*winter_both, label='Summer Night', color='mediumblue')
 ax[4].bar(years, summer_day + summer_both, bottom=winter_night + winter_day + 2*winter_both + summer_night + summer_both, label='Summer Day', color='deepskyblue')
-# Add error bars for standard deviation
-# ax[4].errorbar(years, winter_night + winter_both, 
-#                yerr=combined_seasonal_results['std_winter_night_flood']+combined_seasonal_results['std_winter_both_flood'], fmt='none', ecolor='plum', capsize=2)
-# ax[4].errorbar(years, winter_night + winter_day + 2*winter_both, 
-#                yerr=combined_seasonal_results['std_winter_day_flood']+combined_seasonal_results['std_winter_both_flood'], fmt='none', ecolor='plum', capsize=2)
-# ax[4].errorbar(years, winter_night + winter_day + 2*winter_both + summer_night + summer_both, 
-#                yerr=combined_seasonal_results['std_summer_night_flood']+combined_seasonal_results['std_summer_both_flood'], fmt='none', ecolor='lightcyan', capsize=2)
-# ax[4].errorbar(years, winter_night + winter_day + 2*winter_both + summer_night + summer_day + 2*summer_both, 
-#                yerr=combined_seasonal_results['std_summer_day_flood']+combined_seasonal_results['std_summer_both_flood'], fmt='none', ecolor='blue', capsize=2)
 
 # Set labels and title for stacked bar plot
 ax[4].set_ylabel('Emergence Events\nBy Season & TOD', fontsize=fontsize)
@@ -4429,174 +4229,3 @@ plt.show()
 # print(f'First 25% of non-NaN values: {first_25_time}')
 # print(f'Last 25% of non-NaN values: {last_25_time}')
 # print(f'Mid 50% of non-NaN values: {mid_50_time}')
-# %% Testing to show that the NTR part of the model is decreasing relative to SLR curve
-# for ntr_num in range(0,1):
-#     cmip_num = 0
-#     # ntr_num = 2
-
-#     # ## New Recharge stressmodel with CMIP6 projection realization
-#     # stress_ETo = pd.Series(ETo_data_hourly.iloc[:, cmip_num].values, index=pd.to_datetime(ETo_data_hourly.index))
-#     # stress_precip = pd.Series(precip_data.iloc[:, cmip_num].values, index=pd.to_datetime(precip_data.index))
-#     # ml.stressmodels['recharge'] = ps.RechargeModel(
-#     #     prec=stress_precip,
-#     #     evap=stress_ETo,
-#     #     name="recharge",
-#     #     rfunc=ps.Gamma(),
-#     #     recharge=ps.rch.Linear(),
-#     #     settings=("prec", "evap"))
-
-#     # stress_ntr = pd.Series(ntr_int.iloc[:, ntr_num].values, index=pd.to_datetime(ntr_int.index))
-#     stress_ntr = slr_int_50p_2100
-#     stress_ntr = stress_ntr.tz_localize(None)
-#     ml.stressmodels['ljntr'] = ps.StressModel(
-#         stress=stress_ntr,
-#         # rfunc=ps.Exponential(),
-#         # rfunc = ps.Gamma(),
-#         # rfunc = ps.Polder(),
-#         # rfunc = ps.Hantush(), ## NO
-#         # rfunc = ps.FourParam(),
-#         # rfunc = ps.DoubleExponential(),
-#         rfunc = ps.One(),
-#         name="ljntr_int",
-#         settings="waterlevel")
-
-#     model_int_test = ml.simulate(warmup=warmupdays,tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_int.index)
-#     # recharge_int_test = ml.get_contribution("recharge", tmin="2024-10-01", tmax="2100-10-01")
-#     ntr_int_test = ml.get_contribution("ljntr", tmin="2024-10-01", tmax="2100-10-01")
-#     # tide_test = ml.get_contribution("ljtide_2100", tmin="2024-10-01", tmax="2100-10-01")
-
-#     plt.figure()
-#     plt.plot(model_int_test, label='Model')
-#     # plt.plot(recharge_int_test, label='Recharge Contribution')
-#     plt.plot(2*ntr_int_test, label='NTR Contribution')
-#     plt.plot(befus_mhhw_series, label='Befus et al. (2020) MHHW', color='yellow', linestyle='dashdot', alpha=1.0, linewidth=2, path_effects=[pe.Stroke(linewidth=4, foreground='black'), pe.Normal()])
-#     plt.plot(befus_mhhw_series-ntr_int_test.resample('Y').mean(), label='Befus MHHW - NTRmean')
-#     plt.plot(slr_int_50p_2100-ntr_int_test, label='SLR - NTRmean')
-#     plt.plot(slr_int_50p_2100, label='SLR Intermediate 50p')
-#     # plt.plot(tide_test, label='Tide Test')
-#     plt.xlabel('Time')
-#     plt.ylabel('Elevation (m, NAVD88)')
-#     plt.legend()
-#     plt.title('Model Intermediate Test and Components')
-#     plt.show()
-
-#%% Uncertainty Estimation: Hindcast & Projections 2 Sigma (large)
-
-# ## Hindcast
-# ## error1 = var(residuals) + error_obs
-# residuals = data4comparison - hindcast
-# error_obs = 0.04**2 ## 0.04 m estimated observational standard deviation
-# # error_obs = 0
-# error1 = np.nanvar(residuals) + error_obs
-# twosigma_hindcast = 2*np.sqrt(error1)
-
-# ## Projections (not including SLR curves)
-# ## Variance over the ensembles at each time point and average of these variances over time
-# ## error2 = mean(var(y_forecast))
-# error2_low_dailymax_annualmean = np.mean(np.var(gwt_low_dailymax_annualmean, axis = 1))
-# error2_intlow_dailymax_annualmean = np.mean(np.var(gwt_intlow_dailymax_annualmean, axis = 1))
-# error2_int_dailymax_annualmean = np.mean(np.var(gwt_int_dailymax_annualmean, axis = 1))
-# error2_inthigh_dailymax_annualmean = np.mean(np.var(gwt_inthigh_dailymax_annualmean, axis = 1))
-# error2_high_dailymax_annualmean = np.mean(np.var(gwt_high_dailymax_annualmean, axis = 1))
-
-# ## SLR Curves: 83rd and 17th percentiles
-# p83_slr_low = (slr_low_83p_2100 - slr_low_50p_2100).resample('Y').mean()
-# p17_slr_low = (slr_low_50p_2100 - slr_low_17p_2100).resample('Y').mean()
-# p83_slr_intlow = (slr_intlow_83p_2100 - slr_intlow_50p_2100).resample('Y').mean()
-# p17_slr_intlow = (slr_intlow_50p_2100 - slr_intlow_17p_2100).resample('Y').mean()
-# p83_slr_int = (slr_int_83p_2100 - slr_int_50p_2100).resample('Y').mean()
-# p17_slr_int = (slr_int_50p_2100 - slr_int_17p_2100).resample('Y').mean()
-# p83_slr_inthigh = (slr_inthigh_83p_2100 - slr_inthigh_50p_2100).resample('Y').mean()
-# p17_slr_inthigh = (slr_inthigh_50p_2100 - slr_inthigh_17p_2100).resample('Y').mean()
-# p83_slr_high = (slr_high_83p_2100 - slr_high_50p_2100).resample('Y').mean()
-# p17_slr_high = (slr_high_50p_2100 - slr_high_17p_2100).resample('Y').mean()
-
-# ## Error for each SLR scenario assuming that the error is Gaussian, using the greater of the p83 and p17 values
-# error_slr_low = pd.Series([max(p83, p17) for p83, p17 in zip(p83_slr_low, p17_slr_low)], index=p83_slr_low.index)
-# std_slr_low = error_slr_low / norm.ppf(0.83)
-# variance_slr_low = std_slr_low ** 2
-# error_slr_intlow = pd.Series([max(p83, p17) for p83, p17 in zip(p83_slr_intlow, p17_slr_intlow)], index=p83_slr_intlow.index)
-# std_slr_intlow = error_slr_intlow / norm.ppf(0.83)
-# variance_slr_intlow = std_slr_intlow ** 2
-# error_slr_int = pd.Series([max(p83, p17) for p83, p17 in zip(p83_slr_int, p17_slr_int)], index=p83_slr_int.index)
-# std_slr_int = error_slr_int / norm.ppf(0.83)
-# variance_slr_int = std_slr_int ** 2
-# error_slr_inthigh = pd.Series([max(p83, p17) for p83, p17 in zip(p83_slr_inthigh, p17_slr_inthigh)], index=p83_slr_inthigh.index)
-# std_slr_inthigh = error_slr_inthigh / norm.ppf(0.83)
-# variance_slr_inthigh = std_slr_inthigh ** 2
-# error_slr_high = pd.Series([max(p83, p17) for p83, p17 in zip(p83_slr_high, p17_slr_high)], index=p83_slr_high.index)
-# std_slr_high = error_slr_high / norm.ppf(0.83)
-# variance_slr_high = std_slr_high ** 2
-
-# error_proj_low = error1 + error2_low_dailymax_annualmean + variance_slr_low
-# error_proj_intlow = error1 + error2_intlow_dailymax_annualmean + variance_slr_intlow
-# error_proj_int = error1 + error2_int_dailymax_annualmean + variance_slr_int
-# error_proj_inthigh = error1 + error2_inthigh_dailymax_annualmean + variance_slr_inthigh
-# error_proj_high = error1 + error2_high_dailymax_annualmean + variance_slr_high
-
-# twosigma_proj_low = 2*np.sqrt(error_proj_low)
-# twosigma_proj_intlow = 2*np.sqrt(error_proj_intlow)
-# twosigma_proj_int = 2*np.sqrt(error_proj_int)
-# twosigma_proj_inthigh = 2*np.sqrt(error_proj_inthigh)
-# twosigma_proj_high = 2*np.sqrt(error_proj_high)
-
-# ## Hindcast: annual mean daily maxima with twosigma values
-# ax.plot(gwt_hindcast_dailymax_annualmean, color='black', linewidth=3, label='Hindcast')
-# ax.fill_between(gwt_hindcast_dailymax_annualmean.index, gwt_hindcast_dailymax_annualmean - twosigma_hindcast, gwt_hindcast_dailymax_annualmean + twosigma_hindcast, color='black', alpha=0.2, label='Twosigma Range')
-
-# ## Projections: annual mean daily maxima with twosigma values
-# ax.plot(gwt_low_dailymax_annualmean.mean(axis=1), color='darkgreen', linestyle=':', linewidth=3, label='Low Scenario')
-# ax.fill_between(gwt_low_dailymax_annualmean.index, gwt_low_dailymax_annualmean.mean(axis=1) - twosigma_proj_low, gwt_low_dailymax_annualmean.mean(axis=1) + twosigma_proj_low, color='darkgreen', alpha=0.1)
-# ax.plot(gwt_intlow_dailymax_annualmean.mean(axis=1), color='mediumblue', linestyle=':', linewidth=3, label='Intermediate Low Scenario')
-# ax.fill_between(gwt_intlow_dailymax_annualmean.index, gwt_intlow_dailymax_annualmean.mean(axis=1) - twosigma_proj_intlow, gwt_intlow_dailymax_annualmean.mean(axis=1) + twosigma_proj_intlow, color='mediumblue', alpha=0.1)
-# ax.plot(gwt_int_dailymax_annualmean.mean(axis=1), color='purple', linestyle=':', linewidth=3, label='Intermediate Scenario')
-# ax.fill_between(gwt_int_dailymax_annualmean.index, gwt_int_dailymax_annualmean.mean(axis=1) - twosigma_proj_int, gwt_int_dailymax_annualmean.mean(axis=1) + twosigma_proj_int, color='purple', alpha=0.1)
-# ax.plot(gwt_inthigh_dailymax_annualmean.mean(axis=1), color='darkorange', linestyle=':', linewidth=3, label='Intermediate High Scenario')
-# ax.fill_between(gwt_inthigh_dailymax_annualmean.index, gwt_inthigh_dailymax_annualmean.mean(axis=1) - twosigma_proj_inthigh, gwt_inthigh_dailymax_annualmean.mean(axis=1) + twosigma_proj_inthigh, color='darkorange', alpha=0.1)
-# ax.plot(gwt_high_dailymax_annualmean.mean(axis=1), color='#d62728', linestyle=':', linewidth=3, label='High Scenario')
-# ax.fill_between(gwt_high_dailymax_annualmean.index, gwt_high_dailymax_annualmean.mean(axis=1) - twosigma_proj_high, gwt_high_dailymax_annualmean.mean(axis=1) + twosigma_proj_high, color='#d62728', alpha=0.1)
-
-
-# error3_p83_low = p83_slr_low / norm.ppf(0.83)
-# error3_p17_low = p17_slr_low / norm.ppf(0.17)
-# error3_p83_intlow = p83_slr_intlow / norm.ppf(0.83)
-# error3_p17_intlow = p17_slr_intlow / norm.ppf(0.17)
-# error3_p83_int = p83_slr_int / norm.ppf(0.83)
-# error3_p17_int = p17_slr_int / norm.ppf(0.17)
-# error3_p83_inthigh = p83_slr_inthigh / norm.ppf(0.83)
-# error3_p17_inthigh = p17_slr_inthigh / norm.ppf(0.17)
-# error3_p83_high = p83_slr_high / norm.ppf(0.83)
-# error3_p17_high = p17_slr_high / norm.ppf(0.17)
-
-# projerror_p83_low = error1 + error2_low_dailymax_annualmean + error3_p83_low
-# projerror_p17_low = error1 + error2_low_dailymax_annualmean + error3_p17_low
-# projerror_p83_intlow = error1 + error2_intlow_dailymax_annualmean + error3_p83_intlow
-# projerror_p17_intlow = error1 + error2_intlow_dailymax_annualmean + error3_p17_intlow
-# projerror_p83_int = error1 + error2_int_dailymax_annualmean + error3_p83_int
-# projerror_p17_int = error1 + error2_int_dailymax_annualmean + error3_p17_int
-# projerror_p83_inthigh = error1 + error2_inthigh_dailymax_annualmean + error3_p83_inthigh
-# projerror_p17_inthigh = error1 + error2_inthigh_dailymax_annualmean + error3_p17_inthigh
-# projerror_p83_high = error1 + error2_high_dailymax_annualmean + error3_p83_high
-# projerror_p17_high = error1 + error2_high_dailymax_annualmean + error3_p17_high
-
-# p83_proj_low = norm.ppf(0.83, loc=0, scale=np.sqrt(projerror_p83_low))
-# p17_proj_low = norm.ppf(0.17, loc=0, scale=np.sqrt(-projerror_p17_low))
-# p83_proj_intlow = norm.ppf(0.83, loc=0, scale=np.sqrt(projerror_p83_intlow))
-# p17_proj_intlow = norm.ppf(0.17, loc=0, scale=np.sqrt(-projerror_p17_intlow))
-# p83_proj_int = norm.ppf(0.83, loc=0, scale=np.sqrt(projerror_p83_int))
-# p17_proj_int = norm.ppf(0.17, loc=0, scale=np.sqrt(-projerror_p17_int))
-# p83_proj_inthigh = norm.ppf(0.83, loc=0, scale=np.sqrt(projerror_p83_inthigh))
-# p17_proj_inthigh = norm.ppf(0.17, loc=0, scale=np.sqrt(-projerror_p17_inthigh))
-# p83_proj_high = norm.ppf(0.83, loc=0, scale=np.sqrt(projerror_p83_high))
-# p17_proj_high = norm.ppf(0.17, loc=0, scale=np.sqrt(-projerror_p17_high))
-
-# p83_projection_low = gwt_low_dailymax_annualmean.mean(axis=1) + p83_proj_low
-# p17_projection_low = gwt_low_dailymax_annualmean.mean(axis=1) + p17_proj_low
-# p83_projection_intlow = gwt_intlow_dailymax_annualmean.mean(axis=1) + p83_proj_intlow
-# p17_projection_intlow = gwt_intlow_dailymax_annualmean.mean(axis=1) + p17_proj_intlow
-# p83_projection_int = gwt_int_dailymax_annualmean.mean(axis=1) + p83_proj_int
-# p17_projection_int = gwt_int_dailymax_annualmean.mean(axis=1) + p17_proj_int
-# p83_projection_inthigh = gwt_inthigh_dailymax_annualmean.mean(axis=1) + p83_proj_inthigh
-# p17_projection_inthigh = gwt_inthigh_dailymax_annualmean.mean(axis=1) + p17_proj_inthigh
-# p83_projection_high = gwt_high_dailymax_annualmean.mean(axis=1) + p83_proj_high
-# p17_projection_high = gwt_high_dailymax_annualmean.mean(axis=1) + p17_proj_high

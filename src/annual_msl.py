@@ -24,11 +24,11 @@ from scipy.interpolate import CubicSpline
 import pickle
 
 ## Observations
-path_to_ljtide_full = '../data/LJ_tide_data/ljtide_1924.h5'
+path_to_ljtide_full = '../data/ljtide_1924.h5'
 ## SLR Projections
 path_to_ljslritf = '../data/lj_slr_itf.csv'
 ## Output
-path_to_slr_interp = '../data/slr/slr_interp.pkl'
+path_to_slr_interp = '../data/slr_interp.pkl'
 
 #%% Function: getTides - get tide data from NOAA
 def getTides(date1, date2, station_id = 9410230, product = 'hourly_height', datum = 'NAVD', tz='GMT', units='metric', format='json'):
@@ -110,13 +110,6 @@ ljtide_2000mean_NAVD88 = ljtide_full['2000-01-01':'2000-12-31'].mean()
 ## Compute annual average water level for each year
 ljtide_annualmean_NAVD88 = ljtide_full.resample('AS').mean()
 #%% Load 2022 NASA Interagency Task Force sea level rise data & Create Sea Level Rise Curves
-
-# ## Import SLR projection data from observations
-# slr_obs = pd.read_csv('/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/slr/lj_slr_itf_obs.csv')
-# ## Divide all values in columns 2 to 4 by 1000 to convert from mm to m
-# slr_obs.iloc[:,2:5] = slr_obs.iloc[:,2:].div(1000)
-# ## Change value of column 'Units' to 'm'
-# slr_obs['Units'] = 'm'
 
 ## Import SLR projection data for scenarios
 ## Projections are relative to 2000 annual average MSL at La Jolla Tide Gauge
@@ -278,3 +271,5 @@ slr_inthigh_83p_interp = slr_interp['inthigh_83p']
 slr_high_17p_interp = slr_interp['high_17p']
 slr_high_50p_interp = slr_interp['high_50p']
 slr_high_83p_interp = slr_interp['high_83p']
+
+# %%

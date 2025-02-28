@@ -21,7 +21,11 @@ path_to_ETo_spatial = '../data/ETo_spatial_2003-2024.csv'
 path_to_cmip6_ensemble = '../data/cmip6_ensemble.pkl'
 
 ## Paths for saving data
+path_to_ETo_obs = '../data/ETo_obs.h5'
 path_to_ETo_2100 = '../data/ETo_2100.h5'
+
+long_list_num = 2 ## Integer between 0 and 7 that selects the CMIP6 model to use for the time index that includes leap years
+## Try another value if you receive error: "ValueError: Length of values (31411) does not match length of index (31390)""
 
 #%% Load evapotranspiration SPATIAL data (mm/day)
 ## Spatial gridded data (2km res) available from 2/20/2003-Present
@@ -86,7 +90,7 @@ ETo_data = ETo_1day
 ETo_hist = ETo_data.loc['2003-10-01':'2024-09-30']
 
 ## CMIP6 data
-cmip6_time = pd.to_datetime(cmip6_ensemble[list(cmip6_ensemble.keys())[1]]['time'])
+cmip6_time = pd.to_datetime(cmip6_ensemble[list(cmip6_ensemble.keys())[long_list_num]]['time'])
 ETo_cmip6 = pd.DataFrame(index=cmip6_time)
 ETo_cmip6_scaled = pd.DataFrame(index=cmip6_time)
 for key in cmip6_ensemble.keys():

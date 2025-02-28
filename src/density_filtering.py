@@ -5,15 +5,15 @@ CTD Processing Step 2:
 (First, make sure to run through CTD Processing Step 1 to compute density profiles)
 Filter the CTD profiles to only take the values as the CTD descends into the well
 '''
-
+#%%
 import os
 import pandas as pd
 
 # Specify the folder where your CSV files are located
-folder_path = '../data/'
+folder_path = '../data/ctd_output/'
 
 # Specify the folder where you want to save processed CSV files
-processed_folder_path = '../data/'
+processed_folder_path = '../data/ctd_output_processed/'
 
 # Specify the folder where you want to save the summary CSV file
 mean_csv_folder_path = '../data/'
@@ -23,13 +23,13 @@ os.makedirs(processed_folder_path, exist_ok=True)
 os.makedirs(mean_csv_folder_path, exist_ok=True)
 
 # Get a list of all CSV files in the folder
-csv_files = [f for f in os.listdir(folder_path) if f.endswith('.csv')]
+ctd_files = [f for f in os.listdir(folder_path) if f.endswith('_density_depth.csv')]
 
 # Create an empty dictionary to store the mean density values by date for each well
 well_data = {}
 
 # Loop through each CSV file in the folder
-for file in csv_files:
+for file in ctd_files:
     file_path = os.path.join(folder_path, file)
 
     # Read the CSV file into a pandas DataFrame
@@ -79,3 +79,4 @@ well_data_df.loc['Average'] = well_data_df.mean()
 summary_file_path = os.path.join(mean_csv_folder_path, 'mean_density_by_well_and_date.csv')
 well_data_df.to_csv(summary_file_path)
 
+#%%

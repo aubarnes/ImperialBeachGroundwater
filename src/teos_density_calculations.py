@@ -5,8 +5,8 @@ CTD Processing Step 1:
 Compute density profiles from each CTD cast file
 After this step, run through CTD Processing Step 2 to filter values
 '''
-
-import gsw
+#%%
+import gsw ## >>pip install gsw (not conda install)
 import numpy as np
 import pandas as pd
 import os
@@ -40,7 +40,8 @@ def process_file(file_path, output_folder):
             depth[i] = depth[i - 1] + (delta_P[i - 1] / (r1[i] * g))
 
         # Extract well name and date from the filename
-        well, date = os.path.basename(file_path).split('_')[:2]
+        well, date = os.path.basename(file_path).split('_')
+        date = date.split('.')[0]  # Remove file extension
 
         # Save CSV file with calculated density and depth for this file
         output_df = pd.DataFrame({
@@ -63,5 +64,6 @@ def process_file(file_path, output_folder):
 
 # Process each CSV file in the folder
 for file_name in os.listdir(input_folder):
-    if file_name.endswith('.csv'):
+    if file_name.startswith('CTDwell'):
         process_file(os.path.join(input_folder, file_name), output_folder)
+#%%
