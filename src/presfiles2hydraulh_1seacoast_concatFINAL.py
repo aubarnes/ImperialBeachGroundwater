@@ -18,6 +18,9 @@ from os import path
 # Directory where data exists
 directory = '../data/'
 
+atmofile = '20240516' # Atmospheric data file end date
+#%%
+
 # Customize what files to load
 sensor = '207490'
 in_files = [sensor+'_20220420_1222',
@@ -36,11 +39,11 @@ in_files = np.concatenate((in_files,[sensor+'_20240117_0814',
 out_file = 'seacoast'+in_files[-1][6:]+'_QC'
 
 # Input densities rho (kg/m^3)
-# Salinity of Seacoast well is most complicated, varying up to 16 kg/m^3 but only on a couple of occasions
+# Salinity of Seacoast well is most complicated
 # Mean values based on all CTD casts, Kian Bagheri (2024)
-rho_seacoast = 1012.5
-rho_fifthgrove = 999.0
-rho_pubworks = 1000.7
+rho_seacoast = 1014.4
+rho_fifthgrove = 999.1
+rho_pubworks = 1001.0
 rho_eleventhebony = 998.8
 
 #%% Load and combine all data
@@ -64,7 +67,6 @@ for file in in_files:
 	plt.plot(dat['Timestamps'],dat['Pressure'])
 plt.show()
 #%% Subtract atmospheric pressure from raw pressure
-atmofile = '20240516' # Atmospheric data file end date
 
 ## Load atmospheric pressure data for use on all files
 # if already loaded and saved, skip recreation
@@ -80,7 +82,7 @@ else:
     ## Skipping 2nd row of file to avoid creating multi-indexed dataframe (contained units)
     # Update atmospheric pressure file from SD Bay Meteorological observations:
     # https://tidesandcurrents.noaa.gov/met.html?bdate=20220720&edate=20220802&units=standard&timezone=GMT&id=9410170&interval=6
-    sdbay = pd.read_csv(directory+'SDBay_atmo_data/'+'SDBay_1Dec2021_16May2024.csv',delim_whitespace=False,header=[0])
+    sdbay = pd.read_csv(directory+'SDBay_1Dec2021_16May2024.csv',delim_whitespace=False,header=[0])
     ## Creating Timestamp for ease of plotting (documents are in UTC, our sensors are in UTC/GMT)
 
     # Rename dataframe columns
@@ -99,9 +101,6 @@ else:
     sdbay.PRES[sdbay.PRES==9999] = np.NaN
     sdbay.PRES[sdbay.PRES=='-'] = np.NaN
     sdbay.PRES = sdbay.PRES.interpolate(method='pad').tolist()
-
-    # Save for speed if needed again
-    sdbay.to_hdf(directory+'sdbay'+atmofile+'.h5',key='df',mode='w')
 
     # Save numpy array version for calculations (easier than dataframe)
     # 2 columns: matlabdatenum and atmospheric pressure
