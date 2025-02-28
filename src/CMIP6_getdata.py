@@ -69,7 +69,7 @@ list(dsets)
 ## Create an array of the keys for looping
 keys = list(dsets)
 
-#%% Define Latitude and Longitude of Imperial Beach Point of Interes
+#%% Define Latitude and Longitude of Imperial Beach Point of Interest
 ## Matches the lat/lon of the historical evapotranspiration grid point and location of precipitation gauge
 lat_ib = 32.5756
 lon_ib = -117.1262
