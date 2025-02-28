@@ -16,10 +16,11 @@ import numpy as np
 import requests
 from utide import solve, reconstruct
 import datetime as dt
+import pickle
 
-path_to_ljtide_full = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljtide_1924.h5'
-path_to_coef_lj = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/coef_lj.pkl'
-path_to_ljtide_2100 = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljtide_2100.h5'
+path_to_ljtide_full = '../data/ljtide_1924.h5'
+path_to_coef_lj = '../data/coef_lj.pkl'
+path_to_ljtide_2100 = '../data/ljtide_2100.h5'
 #%% Function: getTides - get tide data from NOAA
 def getTides(date1, date2, station_id = 9410230, product = 'hourly_height', datum = 'NAVD', tz='GMT', units='metric', format='json'):
     ## If the date range is less than 1 year, can call download_tide_data once
@@ -154,7 +155,7 @@ for i in range(len(coef_lj['name'])):
     print(coef_lj['name'][i])
     print('lj: ' + str(coef_lj['A'][i]))
 #%% Save coef_lj with pickle
-import pickle
+
 with open(path_to_coef_lj, 'wb') as f:
     pickle.dump(coef_lj, f)
 
