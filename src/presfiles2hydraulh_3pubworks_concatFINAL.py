@@ -16,7 +16,7 @@ import os.path
 from os import path
 
 # Directory where data exists
-directory = '../data/IB Well Data Processed NPZ and H5/'
+directory = '../data/'
 
 # Customize what files to load
 sensor = '207493'
