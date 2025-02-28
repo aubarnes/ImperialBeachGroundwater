@@ -19,13 +19,13 @@ from utide import reconstruct
 import pickle
 
 ## input paths
-path_to_ljtide_full = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljtide_1924.h5'
-path_to_coef_lj = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/coef_lj.pkl'
-path_to_ljtide_2100 = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljtide_2100.h5'
+path_to_ljtide_full = '../data/ljtide_1924.h5'
+path_to_coef_lj = '../data/coef_lj.pkl'
+path_to_ljtide_2100 = '../data/ljtide_2100.h5'
 
 ## output paths
-path_to_ljntr_hindcast = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljntr_hindcast.h5'
-path_to_ljntr_ensemble = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/LJ_tide_data/ljntr_ensemble.h5'
+path_to_ljntr_hindcast = '../data/ljntr_hindcast.h5'
+path_to_ljntr_ensemble = '../data/ljntr_ensemble.h5'
 
 #%% FUNCTION: Cosine-Lanczos Squared Filter
 def cosine_lanczos_squared_filter(cutoff_hours, fs, N=None):
