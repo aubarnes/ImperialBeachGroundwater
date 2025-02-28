@@ -11,6 +11,10 @@ import numpy as np
 import pandas as pd
 import os
 
+# Define input and output directories
+input_folder = '../data/'
+output_folder = '../data/'
+
 # Function to process a single CSV file
 def process_file(file_path, output_folder):
     try:
@@ -56,10 +60,6 @@ def process_file(file_path, output_folder):
         print(f"Error processing {file_path}: {e}")
         return
 
-
-# Define input and output directories
-input_folder = # Define input and output directories
-output_folder = #
 
 # Process each CSV file in the folder
 for file_name in os.listdir(input_folder):
