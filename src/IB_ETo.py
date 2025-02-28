@@ -17,29 +17,11 @@ import numpy as np
 import pickle
 
 ## Paths for loading data
-path_to_ETo_spatial = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/ETo/ETo_spatial/ETo_spatial_2003-2024.csv'
-path_to_ETo_station = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/ETo/ETo_full.csv'
-path_to_cmip6_ensemble = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/cmip6_ensemble.pkl'
+path_to_ETo_spatial = '../data/ETo_spatial_2003-2024.csv'
+path_to_cmip6_ensemble = '../data/cmip6_ensemble.pkl'
 
 ## Paths for saving data
-path_to_ETo_obs = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/ETo/ETo_spatial/ETo_obs.h5'
-path_to_ETo_2100 = '/Users/austinbarnes/Documents/UCSD SIO/IB Groundwater/ImperialBeach/data/ETo/ETo_spatial/ETo_2100.h5'
-
-#%% Load evapotranspiration STATION data (mm/day)
-## Nearest station to Imperial Beach: station 184 San Diego II; missing large part of groundwater observation period
-## Suggest using spatial data because of missing station observations and different evapotranspiration zone
-
-# SD_ET = pd.read_csv(path_to_ETo_station, header=0)
-# ## Create new column 'timestamp' in SD_ET dataframe by converting 'DateTimeStamp' column to datetime
-# SD_ET['timestamp'] = pd.to_datetime(SD_ET['Date'])
-# ## Set 'timestamp' column as index
-# SD_ET.set_index('timestamp', inplace=True)
-# ## create new dataframe just for the evapotranspiration data
-# ETo_1day = SD_ET['ETo (mm)'] # ['PM ETo (mm)']
-# ## Rename the column to 'ETo'
-# ETo_1day = ETo_1day.rename('ETo')
-# ## Make ETo index a datetime index
-# ETo_1day.index = pd.to_datetime(ETo_1day.index)
+path_to_ETo_2100 = '../data/ETo_2100.h5'
 
 #%% Load evapotranspiration SPATIAL data (mm/day)
 ## Spatial gridded data (2km res) available from 2/20/2003-Present
