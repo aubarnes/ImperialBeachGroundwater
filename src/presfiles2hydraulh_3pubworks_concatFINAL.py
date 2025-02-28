@@ -35,11 +35,11 @@ in_files = [sensor+'_20220615_1021',
 out_file = 'pubworks'+in_files[-1][6:]+'_QC'
 
 # Input densities rho (kg/m^3)
-# Salinity of Seacoast well is most complicated, varying up to 16 kg/m^3 but only on a couple of occasions
+# Salinity of Seacoast well is most complicated
 # Mean values based on all CTD casts, Kian Bagheri (2024)
-rho_seacoast = 1012.5
-rho_fifthgrove = 999.0
-rho_pubworks = 1000.7
+rho_seacoast = 1014.4
+rho_fifthgrove = 999.1
+rho_pubworks = 1001.0
 rho_eleventhebony = 998.8
 
 #%% Load and combine all data
@@ -48,26 +48,21 @@ alldata_combined = pd.DataFrame()
 
 plt.figure()
 for file in in_files:
-    print('Loading & Appending %s:' %(file))
-    dat = pd.read_hdf(directory+file+'.h5','df')
+	print('Loading & Appending %s:' %(file))
+	dat = pd.read_hdf(directory+file+'.h5','df')
 	# Converting the Matlab Datenum format to date time format
     # value 719529 is the datenum value of the Unix epoch start (1970-01-01), which is the default origin for pd.to_datetime()
-    if file == sensor+'_20230927_1505':
-      # for dat['Time'] > the matlab datenum equivalent of 2023-08-09 12:00:00
-      timingcorr = np.where(dat['Time'] > 19578.5+719529)
-      dat['Time'][timingcorr[0][0]:] = dat['Time'][timingcorr[0][0]:]+9-(5.167+0.6)/24 # Timing issue found for this dataset
-    matlabdatenums=dat['Time']-719529
+	matlabdatenums=dat['Time']-719529
     # Using Pandas datetime conversion
-    timestamps = pd.to_datetime(matlabdatenums,unit='D')
-    print(timestamps[0],timestamps[-1:])
-    dat['Timestamps'] = timestamps
-    cols = ['Time','Timestamps','Pressure']
-    dat = dat[cols]
-    alldata_combined = pd.concat([alldata_combined,dat],ignore_index=True)
-    plt.plot(dat['Timestamps'],dat['Pressure'])
+	timestamps = pd.to_datetime(matlabdatenums,unit='D')
+	print(timestamps[0],timestamps[-1:])
+	dat['Timestamps'] = timestamps
+	cols = ['Time','Timestamps','Pressure']
+	dat = dat[cols]
+	alldata_combined = pd.concat([alldata_combined,dat],ignore_index=True)
+	plt.plot(dat['Timestamps'],dat['Pressure'])
 plt.show()
 #%% Subtract atmospheric pressure from raw pressure
-atmofile = '20240516' # Atmospheric data file end date
 
 ## Load atmospheric pressure data for use on all files
 # if already loaded and saved, skip recreation
@@ -83,7 +78,7 @@ else:
     ## Skipping 2nd row of file to avoid creating multi-indexed dataframe (contained units)
     # Update atmospheric pressure file from SD Bay Meteorological observations:
     # https://tidesandcurrents.noaa.gov/met.html?bdate=20220720&edate=20220802&units=standard&timezone=GMT&id=9410170&interval=6
-    sdbay = pd.read_csv(directory+'SDBay_atmo_data/'+'SDBay_1Dec2021_16May2024.csv',delim_whitespace=False,header=[0])
+    sdbay = pd.read_csv(directory+'SDBay_1Dec2021_16May2024.csv',delim_whitespace=False,header=[0])
     ## Creating Timestamp for ease of plotting (documents are in UTC, our sensors are in UTC/GMT)
 
     # Rename dataframe columns
@@ -102,9 +97,6 @@ else:
     sdbay.PRES[sdbay.PRES==9999] = np.NaN
     sdbay.PRES[sdbay.PRES=='-'] = np.NaN
     sdbay.PRES = sdbay.PRES.interpolate(method='pad').tolist()
-
-    # Save for speed if needed again
-    sdbay.to_hdf(directory+'sdbay'+atmofile+'.h5',key='df',mode='w')
 
     # Save numpy array version for calculations (easier than dataframe)
     # 2 columns: matlabdatenum and atmospheric pressure
