@@ -12,7 +12,6 @@ import pandas as pd
 # For interpolation through sensor removal periods
 from scipy import interpolate
 # For checking if files exist already
-import os.path
 from os import path
 
 # Directory where data exists

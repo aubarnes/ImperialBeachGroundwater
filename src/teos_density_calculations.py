@@ -15,6 +15,8 @@ import os
 input_folder = '../data/'
 output_folder = '../data/'
 
+#%%
+
 # Function to process a single CSV file
 def process_file(file_path, output_folder):
     try:

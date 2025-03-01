@@ -18,6 +18,8 @@ processed_folder_path = '../data/ctd_output_processed/'
 # Specify the folder where you want to save the summary CSV file
 mean_csv_folder_path = '../data/'
 
+#%%
+
 # Create directories if they don't exist
 os.makedirs(processed_folder_path, exist_ok=True)
 os.makedirs(mean_csv_folder_path, exist_ok=True)

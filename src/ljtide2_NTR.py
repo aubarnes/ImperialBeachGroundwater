@@ -12,7 +12,6 @@ NOTE: SA and SSA constituents must not contain the seasonal cycle not attributab
 #%% Imports & Define Directory
 import numpy as np
 import pandas as pd
-import netCDF4 as nc
 import matplotlib.pyplot as plt
 %matplotlib
 from utide import reconstruct

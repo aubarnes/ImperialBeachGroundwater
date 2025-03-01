@@ -10,11 +10,6 @@ The data is saved to a dictionary and then saved to a file.
 #%%
 import intake
 import numpy as np
-import xarray as xr
-import matplotlib.pyplot as plt
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-import pylab as P
 import pickle
 %matplotlib
 
