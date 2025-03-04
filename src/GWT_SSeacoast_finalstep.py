@@ -1499,11 +1499,6 @@ boxplot_duration = [
 fontsize = 14
 fig, ax = plt.subplots(5, 1, figsize=(12, 14), sharex=True)
 
-# ## OPTION 1: Plot Mean Flood Depth
-# ax[0].bar(ponding_depths_int['year'], ponding_depths_int['mean_flood_depth'], yerr=ponding_depths_int['std_flood_depth'], color='blue', capsize=3)
-# ax[0].set_ylabel('Mean Flood\nDepth (m)', fontsize=fontsize)
-
-# ## OPTION 2: Box & Whisker plot for ponding_depths_int['flood_depth_min', 'flood_depth_25th', 'flood_depth_50th', 'flood_depth_75th', 'flood_depth_max']
 # Create custom boxplots using the summary stats
 for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_depth):
     ax[0].plot([ponding_depths_int['year'][i], ponding_depths_int['year'][i]], [min_val, max_val], color='black')  # Whiskers
@@ -1515,15 +1510,11 @@ ax[0].set_ylabel('Ponding\nDepth (m)', fontsize=fontsize)
 ## Plot horizontal line at 0.25m and put text on left side, top of line plot 'Safe Limit for Emergency Vehicles'
 ax[0].axhline(y=0.25, color='r', linestyle='--')
 ax[0].text(2020.5, 0.27, 'Safe Limit for\nEmergency Vehicles', color='k', fontsize=fontsize-2)
+ax[0].text(0.005, 1.0, 'a', transform=ax[0].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # ax[0].set_title('D0038\nIntermediate Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
 ax[0].set_title('S Seacoast\nIntermediate Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
 
-# ## OPTION 1: Plot the average hours per event
-# [ax[1].bar(event_durations_int['year'], event_durations_int['mean_avg_hours_per_event'], yerr=event_durations_int['std_avg_hours_per_event'], color='blue', capsize=3)
-# [ax[1].set_ylabel('Avg Flood\nDuration (hr)', fontsize=fontsize)
-
-## OPTION 2: Box & Whisker plot for event_durations_int['duration_min', 'duration_25th', 'duration_50th', 'duration_75th', 'duration_max']
 # Create custom boxplots using the summary stats
 for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_duration):
     ax[1].plot([event_durations_int['year'][i], event_durations_int['year'][i]], [min_val, max_val], color='black')  # Whiskers
@@ -1531,25 +1522,23 @@ for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_duration):
     ax[1].plot([event_durations_int['year'][i], event_durations_int['year'][i]], [q1, q3], color='white', linewidth=5)  # Interquartile range (fill)
     ax[1].plot(event_durations_int['year'][i], median, 'k_', markersize=7)  # Median line
 ax[1].set_ylabel('Duration of\nEvents (hr)', fontsize=fontsize)
-## OPTION 2b: boxplot using boxplot matplotlib function (need all data for boxplot to compute stats on)
-# bp = ax[1].boxplot(boxplot_data, positions=event_durations_int['year'], widths=0.6)
-# Customize the boxplot appearance
-# for element in ['boxes', 'whiskers','means', 'medians', 'caps']:
-#     plt.setp(bp[element], color='black')
-# plt.setp(bp['fliers'], marker='o', markersize=3, markerfacecolor='red')
+
 ax[1].set_yticks(np.arange(0, 26, 5))
+ax[1].text(0.005, 1.0, 'b', transform=ax[1].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the number of days with flooding
 ax[2].bar(days_emergent_int['year'], days_emergent_int['mean'], yerr=days_emergent_int['std'], color='mediumseagreen', capsize=3)
 ax[2].set_ylabel('# Days\nEmergent', fontsize=fontsize)
 ax[2].text(2016.5, 354, 'Daily', color='k', fontsize=fontsize-2)
 ax[2].set_ylim([0, 365])
+ax[2].text(0.005, 1.0, 'c', transform=ax[2].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the total hours above threshold
 ax[3].bar(hours_emergent_int['year'], hours_emergent_int['mean'], yerr=hours_emergent_int['std'], color='mediumseagreen', capsize=3)
 ax[3].set_ylabel('Total Time\nEmergent (hr)', fontsize=fontsize)
 ## Make y-axis plot ticks and labels every 1000
 ax[3].set_yticks(np.arange(0, 6001, 1000))
+ax[3].text(0.005, 1.0, 'd', transform=ax[3].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Stacked bar plot for seasonal day/night/both flooding
 years = combined_seasonal_results['year']
@@ -1560,40 +1549,19 @@ winter_day = combined_seasonal_results['mean_winter_day_flood']
 winter_night = combined_seasonal_results['mean_winter_night_flood']
 winter_both = combined_seasonal_results['mean_winter_both_flood']
 
-# ## OPTION 1: Plot Day/Night/Both (units = # days)
-# ax[4].bar(years, summer_day, label='Summer Day', color='lightblue')
-# ax[4].bar(years, summer_night, bottom=summer_day, label='Summer Night', color='skyblue')
-# ax[4].bar(years, summer_both, bottom=summer_day + summer_night, label='Summer Both', color='deepskyblue')
-# ax[4].bar(years, winter_day, bottom=summer_day + summer_night + summer_both, label='Winter Day', color='lightcoral')
-# ax[4].bar(years, winter_night, bottom=summer_day + summer_night + summer_both + winter_day, label='Winter Night', color='indianred')
-# ax[4].bar(years, winter_both, bottom=summer_day + summer_night + summer_both + winter_day + winter_night, label='Winter Both', color='firebrick')
-
-## OPTION 2: Plot Day/Night (units = # events)
-# ax[4].bar(years, winter_night + winter_both, label='Winter Night', color='indigo')
-# ax[4].bar(years, winter_day + winter_both, bottom=winter_night + winter_both, label='Winter Day', color='plum')
-# ax[4].bar(years, summer_night + summer_both, bottom=winter_night + winter_day + 2*winter_both, label='Summer Night', color='royalblue')
-# ax[4].bar(years, summer_day + summer_both, bottom=winter_night + winter_day + 2*winter_both + summer_night + summer_both, label='Summer Day', color='deepskyblue')
 ax[4].bar(years, winter_night + winter_both, label='Winter Night', color='indigo')
 ax[4].bar(years, winter_day + winter_both, bottom=winter_night + winter_both, label='Winter Day', color='mediumorchid')
 ax[4].bar(years, summer_night + summer_both, bottom=winter_night + winter_day + 2*winter_both, label='Summer Night', color='mediumblue')
 ax[4].bar(years, summer_day + summer_both, bottom=winter_night + winter_day + 2*winter_both + summer_night + summer_both, label='Summer Day', color='deepskyblue')
-# Add error bars for standard deviation
-# ax[4].errorbar(years, winter_night + winter_both, 
-#                yerr=combined_seasonal_results['std_winter_night_flood']+combined_seasonal_results['std_winter_both_flood'], fmt='none', ecolor='plum', capsize=2)
-# ax[4].errorbar(years, winter_night + winter_day + 2*winter_both, 
-#                yerr=combined_seasonal_results['std_winter_day_flood']+combined_seasonal_results['std_winter_both_flood'], fmt='none', ecolor='plum', capsize=2)
-# ax[4].errorbar(years, winter_night + winter_day + 2*winter_both + summer_night + summer_both, 
-#                yerr=combined_seasonal_results['std_summer_night_flood']+combined_seasonal_results['std_summer_both_flood'], fmt='none', ecolor='lightcyan', capsize=2)
-# ax[4].errorbar(years, winter_night + winter_day + 2*winter_both + summer_night + summer_day + 2*summer_both, 
-#                yerr=combined_seasonal_results['std_summer_day_flood']+combined_seasonal_results['std_summer_both_flood'], fmt='none', ecolor='blue', capsize=2)
 
 # Set labels and title for stacked bar plot
 ax[4].set_ylabel('Emergence Events\nBy Season & TOD', fontsize=fontsize)
 handles, labels = ax[4].get_legend_handles_labels()
-ax[4].legend(handles[::-1], labels[::-1], loc='upper left', ncol=2, fontsize=fontsize-2)
+ax[4].legend(handles[::-1], labels[::-1], loc='upper left', bbox_to_anchor=(0.02, 1), ncol=2, fontsize=fontsize-2)
 
 # Set common x-axis label
 ax[4].set_xlabel('Year', fontsize=fontsize)
+ax[4].text(0.005, 1.0, 'e', transform=ax[4].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Set tick label font size
 for a in ax:
@@ -1612,7 +1580,6 @@ full_results_low = []
 
 seasonal_results = []
 
-## Intermediate Scenario
 for realization in gwt_low.columns:
     gwt_low_flooding = pd.DataFrame(gwt_low[realization])
     gwt_low_flooding.columns = ['gwt']
@@ -1846,8 +1813,7 @@ boxplot_duration = [
     ]
     for i in range(len(event_durations_low['year']))
 ]
-
-## PLOT
+#%% PLOT
 fontsize = 14
 fig, ax = plt.subplots(5, 1, figsize=(12, 14), sharex=True)
 
@@ -1861,6 +1827,7 @@ ax[0].set_ylabel('Ponding\nDepth (m)', fontsize=fontsize)
 ## Plot horizontal line at 0.25m and put text on left side, top of line plot 'Safe Limit for Emergency Vehicles'
 ax[0].axhline(y=0.25, color='r', linestyle='--')
 ax[0].text(2020.5, 0.27, 'Safe Limit for\nEmergency Vehicles', color='k', fontsize=fontsize-2)
+ax[0].text(0.005, 1.0, 'a', transform=ax[0].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 ax[0].set_title('S Seacoast\nLow Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
 
@@ -1871,17 +1838,20 @@ for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_duration):
     ax[1].plot(event_durations_low['year'][i], median, 'k_', markersize=7)  # Median line
 ax[1].set_ylabel('Duration of\nEvents (hr)', fontsize=fontsize)
 ax[1].set_yticks(np.arange(0, 16, 5))
+ax[1].text(0.005, 1.0, 'b', transform=ax[1].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the number of days with flooding
 ax[2].bar(days_emergent_low['year'], days_emergent_low['mean'], yerr=days_emergent_low['std'], color='mediumseagreen', capsize=3)
 ax[2].set_ylabel('# Days\nEmergent', fontsize=fontsize)
 ax[2].text(2016.5, 354, 'Daily', color='k', fontsize=fontsize-2)
 ax[2].set_yticks(np.arange(0, 16, 5))
+ax[2].text(0.005, 1.0, 'c', transform=ax[2].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the total hours above threshold
 ax[3].bar(hours_emergent_low['year'], hours_emergent_low['mean'], yerr=hours_emergent_low['std'], color='mediumseagreen', capsize=3)
 ax[3].set_ylabel('Total Time\nEmergent (hr)', fontsize=fontsize)
 ax[3].set_yticks(np.arange(0, 51, 10))
+ax[3].text(0.005, 1.0, 'd', transform=ax[3].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Stacked bar plot for seasonal day/night/both flooding
 years = combined_seasonal_results['year']
@@ -1902,10 +1872,11 @@ ax[4].set_ylim([0, 10])
 # Set labels and title for stacked bar plot
 ax[4].set_ylabel('Emergence Events\nBy Season & TOD', fontsize=fontsize)
 handles, labels = ax[4].get_legend_handles_labels()
-ax[4].legend(handles[::-1], labels[::-1], loc='upper left', ncol = 2,fontsize=fontsize-2)
+ax[4].legend(handles[::-1], labels[::-1], loc='upper left', bbox_to_anchor=(0.02, 1), ncol=2, fontsize=fontsize-2)
 
 # Set common x-axis label
 ax[4].set_xlabel('Year', fontsize=fontsize)
+ax[4].text(0.005, 1.0, 'e', transform=ax[4].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Set tick label font size
 for a in ax:
@@ -1924,7 +1895,6 @@ full_results_intlow = []
 
 seasonal_results = []
 
-## Intermediate Scenario
 for realization in gwt_intlow.columns:
     gwt_intlow_flooding = pd.DataFrame(gwt_intlow[realization])
     gwt_intlow_flooding.columns = ['gwt']
@@ -2159,7 +2129,7 @@ boxplot_duration = [
     for i in range(len(event_durations_intlow['year']))
 ]
 
-## PLOT
+#%% PLOT
 fontsize = 14
 fig, ax = plt.subplots(5, 1, figsize=(12, 14), sharex=True)
 
@@ -2173,6 +2143,7 @@ ax[0].set_ylabel('Ponding\nDepth (m)', fontsize=fontsize)
 ## Plot horizontal line at 0.25m and put text on left side, top of line plot 'Safe Limit for Emergency Vehicles'
 ax[0].axhline(y=0.25, color='r', linestyle='--')
 ax[0].text(2020.5, 0.27, 'Safe Limit for\nEmergency Vehicles', color='k', fontsize=fontsize-2)
+ax[0].text(0.005, 1.0, 'a', transform=ax[0].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 ax[0].set_title('S Seacoast\nIntermediate Low Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
 
@@ -2183,17 +2154,20 @@ for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_duration):
     ax[1].plot(event_durations_intlow['year'][i], median, 'k_', markersize=7)  # Median line
 ax[1].set_ylabel('Duration of\nEvents (hr)', fontsize=fontsize)
 ax[1].set_yticks(np.arange(0, 11, 2))
+ax[1].text(0.005, 1.0, 'b', transform=ax[1].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the number of days with flooding
 ax[2].bar(days_emergent_intlow['year'], days_emergent_intlow['mean'], yerr=days_emergent_intlow['std'], color='mediumseagreen', capsize=3)
 ax[2].set_ylabel('# Days\nEmergent', fontsize=fontsize)
 # ax[2].text(2016.5, 354, 'Daily', color='k', fontsize=fontsize-2)
 ax[2].set_yticks(np.arange(0, 101, 20))
+ax[2].text(0.005, 1.0, 'c', transform=ax[2].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the total hours above threshold
 ax[3].bar(hours_emergent_intlow['year'], hours_emergent_intlow['mean'], yerr=hours_emergent_intlow['std'], color='mediumseagreen', capsize=3)
 ax[3].set_ylabel('Total Time\nEmergent (hr)', fontsize=fontsize)
 ax[3].set_yticks(np.arange(0, 251, 50))
+ax[3].text(0.005, 1.0, 'd', transform=ax[3].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Stacked bar plot for seasonal day/night/both flooding
 years = combined_seasonal_results['year']
@@ -2214,10 +2188,11 @@ ax[4].bar(years, summer_day + summer_both, bottom=winter_night + winter_day + 2*
 # Set labels and title for stacked bar plot
 ax[4].set_ylabel('Emergence Events\nBy Season & TOD', fontsize=fontsize)
 handles, labels = ax[4].get_legend_handles_labels()
-ax[4].legend(handles[::-1], labels[::-1], loc='upper left', ncol = 2,fontsize=fontsize-2)
+ax[4].legend(handles[::-1], labels[::-1], loc='upper left', bbox_to_anchor=(0.02, 1), ncol=2, fontsize=fontsize-2)
 
 # Set common x-axis label
 ax[4].set_xlabel('Year', fontsize=fontsize)
+ax[4].text(0.005, 1.0, 'e', transform=ax[4].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Set tick label font size
 for a in ax:
@@ -2236,7 +2211,6 @@ full_results_inthigh = []
 
 seasonal_results = []
 
-## Intermediate Scenario
 for realization in gwt_inthigh.columns:
     gwt_inthigh_flooding = pd.DataFrame(gwt_inthigh[realization])
     gwt_inthigh_flooding.columns = ['gwt']
@@ -2471,7 +2445,7 @@ boxplot_duration = [
     for i in range(len(event_durations_inthigh['year']))
 ]
 
-## PLOT
+#%% PLOT
 fontsize = 14
 fig, ax = plt.subplots(5, 1, figsize=(12, 14), sharex=True)
 
@@ -2485,6 +2459,7 @@ ax[0].set_ylabel('Ponding\nDepth (m)', fontsize=fontsize)
 ## Plot horizontal line at 0.25m and put text on left side, top of line plot 'Safe Limit for Emergency Vehicles'
 ax[0].axhline(y=0.25, color='r', linestyle='--')
 ax[0].text(2020.5, 0.27, 'Safe Limit for\nEmergency Vehicles', color='k', fontsize=fontsize-2)
+ax[0].text(0.005, 1.0, 'a', transform=ax[0].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 ax[0].set_title('S Seacoast\nIntermediate High Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
 
@@ -2496,17 +2471,20 @@ for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_duration):
 ax[1].set_ylabel('Duration of\nEvents (hr)', fontsize=fontsize)
 # ax[1].set_yticks(np.arange(0, 11, 2))
 ax[1].set_ylim([0, 40])
+ax[1].text(0.005, 1.0, 'b', transform=ax[1].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the number of days with flooding
 ax[2].bar(days_emergent_inthigh['year'], days_emergent_inthigh['mean'], yerr=days_emergent_inthigh['std'], color='mediumseagreen', capsize=3)
 ax[2].set_ylabel('# Days\nEmergent', fontsize=fontsize)
 ax[2].text(2016.5, 354, 'Daily', color='k', fontsize=fontsize-2)
 ax[2].set_ylim([0, 365])
+ax[2].text(0.005, 1.0, 'c', transform=ax[2].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the total hours above threshold
 ax[3].bar(hours_emergent_inthigh['year'], hours_emergent_inthigh['mean'], yerr=hours_emergent_inthigh['std'], color='mediumseagreen', capsize=3)
 ax[3].set_ylabel('Total Time\nEmergent (hr)', fontsize=fontsize)
 ax[3].set_yticks(np.arange(0, 9001, 1000))
+ax[3].text(0.005, 1.0, 'd', transform=ax[3].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Stacked bar plot for seasonal day/night/both flooding
 years = combined_seasonal_results['year']
@@ -2527,10 +2505,11 @@ ax[4].bar(years, summer_day + summer_both, bottom=winter_night + winter_day + 2*
 # Set labels and title for stacked bar plot
 ax[4].set_ylabel('Emergence Events\nBy Season & TOD', fontsize=fontsize)
 handles, labels = ax[4].get_legend_handles_labels()
-ax[4].legend(handles[::-1], labels[::-1], loc='upper left', ncol = 2,fontsize=fontsize-2)
+ax[4].legend(handles[::-1], labels[::-1], loc='upper left', bbox_to_anchor=(0.02, 1), ncol=2, fontsize=fontsize-2)
 
 # Set common x-axis label
 ax[4].set_xlabel('Year', fontsize=fontsize)
+ax[4].text(0.005, 1.0, 'e', transform=ax[4].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Set tick label font size
 for a in ax:
@@ -2549,7 +2528,6 @@ full_results_high = []
 
 seasonal_results = []
 
-## Intermediate Scenario
 for realization in gwt_high.columns:
     gwt_high_flooding = pd.DataFrame(gwt_high[realization])
     gwt_high_flooding.columns = ['gwt']
@@ -2784,7 +2762,7 @@ boxplot_duration = [
     for i in range(len(event_durations_high['year']))
 ]
 
-## PLOT
+#%% PLOT
 fontsize = 14
 fig, ax = plt.subplots(5, 1, figsize=(12, 14), sharex=True)
 
@@ -2798,6 +2776,7 @@ ax[0].set_ylabel('Ponding\nDepth (m)', fontsize=fontsize)
 ## Plot horizontal line at 0.25m and put text on left side, top of line plot 'Safe Limit for Emergency Vehicles'
 ax[0].axhline(y=0.25, color='r', linestyle='--')
 ax[0].text(2020.5, 0.27, 'Safe Limit for\nEmergency Vehicles', color='k', fontsize=fontsize-2)
+ax[0].text(0.005, 1.0, 'a', transform=ax[0].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 ax[0].set_title('S Seacoast\nHigh Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
 
@@ -2811,17 +2790,20 @@ ax[1].set_yticks(np.arange(0, 51, 10))
 ax[1].set_ylim([0, 40])
 ## Add text "Near Permanent\nInundation" at x = 2092, y = 20, in red
 ax[1].text(2092, 10, 'Nearly\nPermanent\nInundation', color='r', fontsize=fontsize-2)
+ax[1].text(0.005, 1.0, 'b', transform=ax[1].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the number of days with flooding
 ax[2].bar(days_emergent_high['year'], days_emergent_high['mean'], yerr=days_emergent_high['std'], color='mediumseagreen', capsize=3)
 ax[2].set_ylabel('# Days\nEmergent', fontsize=fontsize)
 ax[2].text(2016.5, 354, 'Daily', color='k', fontsize=fontsize-2)
 ax[2].set_ylim([0, 365])
+ax[2].text(0.005, 1.0, 'c', transform=ax[2].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the total hours above threshold
 ax[3].bar(hours_emergent_high['year'], hours_emergent_high['mean'], yerr=hours_emergent_high['std'], color='mediumseagreen', capsize=3)
 ax[3].set_ylabel('Total Time\nEmergent (hr)', fontsize=fontsize)
 ax[3].set_yticks(np.arange(0, 9001, 1000))
+ax[3].text(0.005, 1.0, 'd', transform=ax[3].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Stacked bar plot for seasonal day/night/both flooding
 years = combined_seasonal_results['year']
@@ -2842,10 +2824,11 @@ ax[4].bar(years, summer_day + summer_both, bottom=winter_night + winter_day + 2*
 # Set labels and title for stacked bar plot
 ax[4].set_ylabel('Emergence Events\nBy Season & TOD', fontsize=fontsize)
 handles, labels = ax[4].get_legend_handles_labels()
-ax[4].legend(handles[::-1], labels[::-1], loc='upper left', ncol = 2,fontsize=fontsize-2)
+ax[4].legend(handles[::-1], labels[::-1], loc='upper left', bbox_to_anchor=(0.02, 1), ncol=2, fontsize=fontsize-2)
 
 # Set common x-axis label
 ax[4].set_xlabel('Year', fontsize=fontsize)
+ax[4].text(0.005, 1.0, 'e', transform=ax[4].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Set tick label font size
 for a in ax:
@@ -3099,15 +3082,11 @@ boxplot_duration = [
     ]
     for i in range(len(event_durations_int['year']))
 ]
+#%% PLOT Palm Ave - Intermediate Scenario
 
 fontsize = 14
 fig, ax = plt.subplots(5, 1, figsize=(12, 14), sharex=True)
 
-# ## OPTION 1: Plot Mean Flood Depth
-# ax[0].bar(ponding_depths_int['year'], ponding_depths_int['mean_flood_depth'], yerr=ponding_depths_int['std_flood_depth'], color='blue', capsize=3)
-# ax[0].set_ylabel('Mean Flood\nDepth (m)', fontsize=fontsize)
-
-# ## OPTION 2: Box & Whisker plot for ponding_depths_int['flood_depth_min', 'flood_depth_25th', 'flood_depth_50th', 'flood_depth_75th', 'flood_depth_max']
 # Create custom boxplots using the summary stats
 for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_depth):
     ax[0].plot([ponding_depths_int['year'][i], ponding_depths_int['year'][i]], [min_val, max_val], color='black')  # Whiskers
@@ -3119,15 +3098,10 @@ ax[0].set_ylabel('Ponding\nDepth (m)', fontsize=fontsize)
 ## Plot horizontal line at 0.25m and put text on left side, top of line plot 'Safe Limit for Emergency Vehicles'
 ax[0].axhline(y=0.25, color='r', linestyle='--')
 ax[0].text(2020.5, 0.27, 'Safe Limit for\nEmergency Vehicles', color='k', fontsize=fontsize-2)
+ax[0].text(0.005, 1.0, 'a', transform=ax[0].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
-# ax[0].set_title('D0038\nIntermediate Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
 ax[0].set_title('Palm Ave\nIntermediate Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
 
-# ## OPTION 1: Plot the average hours per event
-# [ax[1].bar(event_durations_int['year'], event_durations_int['mean_avg_hours_per_event'], yerr=event_durations_int['std_avg_hours_per_event'], color='blue', capsize=3)
-# [ax[1].set_ylabel('Avg Flood\nDuration (hr)', fontsize=fontsize)
-
-## OPTION 2: Box & Whisker plot for event_durations_int['duration_min', 'duration_25th', 'duration_50th', 'duration_75th', 'duration_max']
 # Create custom boxplots using the summary stats
 for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_duration):
     ax[1].plot([event_durations_int['year'][i], event_durations_int['year'][i]], [min_val, max_val], color='black')  # Whiskers
@@ -3135,25 +3109,21 @@ for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_duration):
     ax[1].plot([event_durations_int['year'][i], event_durations_int['year'][i]], [q1, q3], color='white', linewidth=5)  # Interquartile range (fill)
     ax[1].plot(event_durations_int['year'][i], median, 'k_', markersize=7)  # Median line
 ax[1].set_ylabel('Duration of\nEvents (hr)', fontsize=fontsize)
-## OPTION 2b: boxplot using boxplot matplotlib function (need all data for boxplot to compute stats on)
-# bp = ax[1].boxplot(boxplot_data, positions=event_durations_int['year'], widths=0.6)
-# Customize the boxplot appearance
-# for element in ['boxes', 'whiskers','means', 'medians', 'caps']:
-#     plt.setp(bp[element], color='black')
-# plt.setp(bp['fliers'], marker='o', markersize=3, markerfacecolor='red')
 ax[1].set_yticks(np.arange(0, 21, 5))
+ax[1].text(0.005, 1.0, 'b', transform=ax[1].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the number of days with flooding
 ax[2].bar(days_emergent_int['year'], days_emergent_int['mean'], yerr=days_emergent_int['std'], color='mediumseagreen', capsize=3)
 ax[2].set_ylabel('# Days\nEmergent', fontsize=fontsize)
 ax[2].text(2016.5, 354, 'Daily', color='k', fontsize=fontsize-2)
 ax[2].set_ylim([0, 365])
+ax[2].text(0.005, 1.0, 'c', transform=ax[2].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the total hours above threshold
 ax[3].bar(hours_emergent_int['year'], hours_emergent_int['mean'], yerr=hours_emergent_int['std'], color='mediumseagreen', capsize=3)
 ax[3].set_ylabel('Total Time\nEmergent (hr)', fontsize=fontsize)
-## Make y-axis plot ticks and labels every 1000
 ax[3].set_yticks(np.arange(0, 4001, 1000))
+ax[3].text(0.005, 1.0, 'd', transform=ax[3].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Stacked bar plot for seasonal day/night/both flooding
 years = combined_seasonal_results['year']
@@ -3164,47 +3134,26 @@ winter_day = combined_seasonal_results['mean_winter_day_flood']
 winter_night = combined_seasonal_results['mean_winter_night_flood']
 winter_both = combined_seasonal_results['mean_winter_both_flood']
 
-# ## OPTION 1: Plot Day/Night/Both (units = # days)
-# ax[4].bar(years, summer_day, label='Summer Day', color='lightblue')
-# ax[4].bar(years, summer_night, bottom=summer_day, label='Summer Night', color='skyblue')
-# ax[4].bar(years, summer_both, bottom=summer_day + summer_night, label='Summer Both', color='deepskyblue')
-# ax[4].bar(years, winter_day, bottom=summer_day + summer_night + summer_both, label='Winter Day', color='lightcoral')
-# ax[4].bar(years, winter_night, bottom=summer_day + summer_night + summer_both + winter_day, label='Winter Night', color='indianred')
-# ax[4].bar(years, winter_both, bottom=summer_day + summer_night + summer_both + winter_day + winter_night, label='Winter Both', color='firebrick')
-
-## OPTION 2: Plot Day/Night (units = # events)
-# ax[4].bar(years, winter_night + winter_both, label='Winter Night', color='indigo')
-# ax[4].bar(years, winter_day + winter_both, bottom=winter_night + winter_both, label='Winter Day', color='plum')
-# ax[4].bar(years, summer_night + summer_both, bottom=winter_night + winter_day + 2*winter_both, label='Summer Night', color='royalblue')
-# ax[4].bar(years, summer_day + summer_both, bottom=winter_night + winter_day + 2*winter_both + summer_night + summer_both, label='Summer Day', color='deepskyblue')
 ax[4].bar(years, winter_night + winter_both, label='Winter Night', color='indigo')
 ax[4].bar(years, winter_day + winter_both, bottom=winter_night + winter_both, label='Winter Day', color='mediumorchid')
 ax[4].bar(years, summer_night + summer_both, bottom=winter_night + winter_day + 2*winter_both, label='Summer Night', color='mediumblue')
 ax[4].bar(years, summer_day + summer_both, bottom=winter_night + winter_day + 2*winter_both + summer_night + summer_both, label='Summer Day', color='deepskyblue')
-# Add error bars for standard deviation
-# ax[4].errorbar(years, winter_night + winter_both, 
-#                yerr=combined_seasonal_results['std_winter_night_flood']+combined_seasonal_results['std_winter_both_flood'], fmt='none', ecolor='plum', capsize=2)
-# ax[4].errorbar(years, winter_night + winter_day + 2*winter_both, 
-#                yerr=combined_seasonal_results['std_winter_day_flood']+combined_seasonal_results['std_winter_both_flood'], fmt='none', ecolor='plum', capsize=2)
-# ax[4].errorbar(years, winter_night + winter_day + 2*winter_both + summer_night + summer_both, 
-#                yerr=combined_seasonal_results['std_summer_night_flood']+combined_seasonal_results['std_summer_both_flood'], fmt='none', ecolor='lightcyan', capsize=2)
-# ax[4].errorbar(years, winter_night + winter_day + 2*winter_both + summer_night + summer_day + 2*summer_both, 
-#                yerr=combined_seasonal_results['std_summer_day_flood']+combined_seasonal_results['std_summer_both_flood'], fmt='none', ecolor='blue', capsize=2)
 
 # Set labels and title for stacked bar plot
 ax[4].set_ylabel('Emergence Events\nBy Season & TOD', fontsize=fontsize)
 handles, labels = ax[4].get_legend_handles_labels()
-ax[4].legend(handles[::-1], labels[::-1], loc='upper left', ncol=2, fontsize=fontsize-2)
+ax[4].legend(handles[::-1], labels[::-1], loc='upper left', bbox_to_anchor=(0.02, 1), ncol=2, fontsize=fontsize-2)
 
 # Set common x-axis label
 ax[4].set_xlabel('Year', fontsize=fontsize)
+ax[4].text(0.005, 1.0, 'e', transform=ax[4].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Set tick label font size
 for a in ax:
     a.tick_params(axis='both', which='major', labelsize=fontsize-2)
     a.xaxis.grid(True, which='major')
 
-## Restrict the x-axis
+# Restrict the x-axis
 ax[0].set_xlim([2020, 2100])
 
 plt.tight_layout()
@@ -3452,14 +3401,10 @@ boxplot_duration = [
     for i in range(len(event_durations_int['year']))
 ]
 
+#%% PLOT Encanto - Intermediate Scenario
 fontsize = 14
 fig, ax = plt.subplots(5, 1, figsize=(12, 14), sharex=True)
 
-# ## OPTION 1: Plot Mean Flood Depth
-# ax[0].bar(ponding_depths_int['year'], ponding_depths_int['mean_flood_depth'], yerr=ponding_depths_int['std_flood_depth'], color='blue', capsize=3)
-# ax[0].set_ylabel('Mean Flood\nDepth (m)', fontsize=fontsize)
-
-# ## OPTION 2: Box & Whisker plot for ponding_depths_int['flood_depth_min', 'flood_depth_25th', 'flood_depth_50th', 'flood_depth_75th', 'flood_depth_max']
 # Create custom boxplots using the summary stats
 for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_depth):
     ax[0].plot([ponding_depths_int['year'][i], ponding_depths_int['year'][i]], [min_val, max_val], color='black')  # Whiskers
@@ -3471,41 +3416,32 @@ ax[0].set_ylabel('Ponding\nDepth (m)', fontsize=fontsize)
 ## Plot horizontal line at 0.25m and put text on left side, top of line plot 'Safe Limit for Emergency Vehicles'
 ax[0].axhline(y=0.25, color='r', linestyle='--')
 ax[0].text(2020.5, 0.27, 'Safe Limit for\nEmergency Vehicles', color='k', fontsize=fontsize-2)
+ax[0].text(0.005, 1.0, 'a', transform=ax[0].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
-# ax[0].set_title('D0038\nIntermediate Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
 ax[0].set_title('Encanto Ave\nIntermediate Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
 
-# ## OPTION 1: Plot the average hours per event
-# [ax[1].bar(event_durations_int['year'], event_durations_int['mean_avg_hours_per_event'], yerr=event_durations_int['std_avg_hours_per_event'], color='blue', capsize=3)
-# [ax[1].set_ylabel('Avg Flood\nDuration (hr)', fontsize=fontsize)
-
-## OPTION 2: Box & Whisker plot for event_durations_int['duration_min', 'duration_25th', 'duration_50th', 'duration_75th', 'duration_max']
-# Create custom boxplots using the summary stats
 for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_duration):
     ax[1].plot([event_durations_int['year'][i], event_durations_int['year'][i]], [min_val, max_val], color='black')  # Whiskers
     ax[1].plot([event_durations_int['year'][i], event_durations_int['year'][i]], [q1, q3], color='black', linewidth=7)  # Interquartile range (box)
     ax[1].plot([event_durations_int['year'][i], event_durations_int['year'][i]], [q1, q3], color='white', linewidth=5)  # Interquartile range (fill)
     ax[1].plot(event_durations_int['year'][i], median, 'k_', markersize=7)  # Median line
 ax[1].set_ylabel('Duration of\nEvents (hr)', fontsize=fontsize)
-## OPTION 2b: boxplot using boxplot matplotlib function (need all data for boxplot to compute stats on)
-# bp = ax[1].boxplot(boxplot_data, positions=event_durations_int['year'], widths=0.6)
-# Customize the boxplot appearance
-# for element in ['boxes', 'whiskers','means', 'medians', 'caps']:
-#     plt.setp(bp[element], color='black')
-# plt.setp(bp['fliers'], marker='o', markersize=3, markerfacecolor='red')
 ax[1].set_yticks(np.arange(0, 16, 5))
+ax[1].text(0.005, 1.0, 'b', transform=ax[1].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the number of days with flooding
 ax[2].bar(days_emergent_int['year'], days_emergent_int['mean'], yerr=days_emergent_int['std'], color='mediumseagreen', capsize=3)
 ax[2].set_ylabel('# Days\nEmergent', fontsize=fontsize)
 ax[2].text(2016.5, 354, 'Daily', color='k', fontsize=fontsize-2)
 ax[2].set_ylim([0, 365])
+ax[2].text(0.005, 1.0, 'c', transform=ax[2].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the total hours above threshold
 ax[3].bar(hours_emergent_int['year'], hours_emergent_int['mean'], yerr=hours_emergent_int['std'], color='mediumseagreen', capsize=3)
 ax[3].set_ylabel('Total Time\nEmergent (hr)', fontsize=fontsize)
 ## Make y-axis plot ticks and labels every 1000
 ax[3].set_yticks(np.arange(0, 3001, 1000))
+ax[3].text(0.005, 1.0, 'd', transform=ax[3].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Stacked bar plot for seasonal day/night/both flooding
 years = combined_seasonal_results['year']
@@ -3516,19 +3452,6 @@ winter_day = combined_seasonal_results['mean_winter_day_flood']
 winter_night = combined_seasonal_results['mean_winter_night_flood']
 winter_both = combined_seasonal_results['mean_winter_both_flood']
 
-# ## OPTION 1: Plot Day/Night/Both (units = # days)
-# ax[4].bar(years, summer_day, label='Summer Day', color='lightblue')
-# ax[4].bar(years, summer_night, bottom=summer_day, label='Summer Night', color='skyblue')
-# ax[4].bar(years, summer_both, bottom=summer_day + summer_night, label='Summer Both', color='deepskyblue')
-# ax[4].bar(years, winter_day, bottom=summer_day + summer_night + summer_both, label='Winter Day', color='lightcoral')
-# ax[4].bar(years, winter_night, bottom=summer_day + summer_night + summer_both + winter_day, label='Winter Night', color='indianred')
-# ax[4].bar(years, winter_both, bottom=summer_day + summer_night + summer_both + winter_day + winter_night, label='Winter Both', color='firebrick')
-
-## OPTION 2: Plot Day/Night (units = # events)
-# ax[4].bar(years, winter_night + winter_both, label='Winter Night', color='indigo')
-# ax[4].bar(years, winter_day + winter_both, bottom=winter_night + winter_both, label='Winter Day', color='plum')
-# ax[4].bar(years, summer_night + summer_both, bottom=winter_night + winter_day + 2*winter_both, label='Summer Night', color='royalblue')
-# ax[4].bar(years, summer_day + summer_both, bottom=winter_night + winter_day + 2*winter_both + summer_night + summer_both, label='Summer Day', color='deepskyblue')
 ax[4].bar(years, winter_night + winter_both, label='Winter Night', color='indigo')
 ax[4].bar(years, winter_day + winter_both, bottom=winter_night + winter_both, label='Winter Day', color='mediumorchid')
 ax[4].bar(years, summer_night + summer_both, bottom=winter_night + winter_day + 2*winter_both, label='Summer Night', color='mediumblue')
@@ -3537,10 +3460,11 @@ ax[4].bar(years, summer_day + summer_both, bottom=winter_night + winter_day + 2*
 # Set labels and title for stacked bar plot
 ax[4].set_ylabel('Emergence Events\nBy Season & TOD', fontsize=fontsize)
 handles, labels = ax[4].get_legend_handles_labels()
-ax[4].legend(handles[::-1], labels[::-1], loc='upper left', ncol=2, fontsize=fontsize-2)
+ax[4].legend(handles[::-1], labels[::-1], loc='upper left', bbox_to_anchor=(0.02, 1), ncol=2, fontsize=fontsize-2)
 
 # Set common x-axis label
 ax[4].set_xlabel('Year', fontsize=fontsize)
+ax[4].text(0.005, 1.0, 'e', transform=ax[4].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Set tick label font size
 for a in ax:
@@ -3791,6 +3715,7 @@ boxplot_duration = [
     for i in range(len(event_durations_int['year']))
 ]
 
+#%% PLOT Cortez - Intermediate Scenario
 fontsize = 14
 fig, ax = plt.subplots(5, 1, figsize=(12, 14), sharex=True)
 
@@ -3805,6 +3730,7 @@ ax[0].set_ylabel('Ponding\nDepth (m)', fontsize=fontsize)
 ## Plot horizontal line at 0.25m and put text on left side, top of line plot 'Safe Limit for Emergency Vehicles'
 ax[0].axhline(y=0.25, color='r', linestyle='--')
 ax[0].text(2020.5, 0.27, 'Safe Limit for\nEmergency Vehicles', color='k', fontsize=fontsize-2)
+ax[0].text(0.005, 1.0, 'a', transform=ax[0].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # ax[0].set_title('D0038\nIntermediate Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
 ax[0].set_title('Cortez Ave\nIntermediate Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
@@ -3817,18 +3743,21 @@ for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_duration):
     ax[1].plot(event_durations_int['year'][i], median, 'k_', markersize=7)  # Median line
 ax[1].set_ylabel('Duration of\nEvents (hr)', fontsize=fontsize)
 ax[1].set_yticks(np.arange(0, 11, 5))
+ax[1].text(0.005, 1.0, 'b', transform=ax[1].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the number of days with flooding
 ax[2].bar(days_emergent_int['year'], days_emergent_int['mean'], yerr=days_emergent_int['std'], color='mediumseagreen', capsize=3)
 ax[2].set_ylabel('# Days\nEmergent', fontsize=fontsize)
 ax[2].text(2016.5, 354, 'Daily', color='k', fontsize=fontsize-2)
 ax[2].set_ylim([0, 365])
+ax[2].text(0.005, 1.0, 'c', transform=ax[2].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the total hours above threshold
 ax[3].bar(hours_emergent_int['year'], hours_emergent_int['mean'], yerr=hours_emergent_int['std'], color='mediumseagreen', capsize=3)
 ax[3].set_ylabel('Total Time\nEmergent (hr)', fontsize=fontsize)
 ## Make y-axis plot ticks and labels every 1000
 ax[3].set_yticks(np.arange(0, 2001, 1000))
+ax[3].text(0.005, 1.0, 'd', transform=ax[3].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Stacked bar plot for seasonal day/night/both flooding
 years = combined_seasonal_results['year']
@@ -3848,10 +3777,11 @@ ax[4].bar(years, summer_day + summer_both, bottom=winter_night + winter_day + 2*
 # Set labels and title for stacked bar plot
 ax[4].set_ylabel('Emergence Events\nBy Season & TOD', fontsize=fontsize)
 handles, labels = ax[4].get_legend_handles_labels()
-ax[4].legend(handles[::-1], labels[::-1], loc='upper left', ncol=2, fontsize=fontsize-2)
+ax[4].legend(handles[::-1], labels[::-1], loc='upper left', bbox_to_anchor=(0.02, 1), ncol=2, fontsize=fontsize-2)
 
 # Set common x-axis label
 ax[4].set_xlabel('Year', fontsize=fontsize)
+ax[4].text(0.005, 1.0, 'e', transform=ax[4].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Set tick label font size
 for a in ax:
@@ -4104,16 +4034,10 @@ boxplot_duration = [
     ]
     for i in range(len(event_durations_int['year']))
 ]
-#%%
+#%% PLOT Descanso - Intermediate Scenario
 fontsize = 14
 fig, ax = plt.subplots(5, 1, figsize=(12, 14), sharex=True)
 
-# ## OPTION 1: Plot Mean Flood Depth
-# ax[0].bar(ponding_depths_int['year'], ponding_depths_int['mean_flood_depth'], yerr=ponding_depths_int['std_flood_depth'], color='blue', capsize=3)
-# ax[0].set_ylabel('Mean Flood\nDepth (m)', fontsize=fontsize)
-
-# ## OPTION 2: Box & Whisker plot for ponding_depths_int['flood_depth_min', 'flood_depth_25th', 'flood_depth_50th', 'flood_depth_75th', 'flood_depth_max']
-# Create custom boxplots using the summary stats
 for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_depth):
     ax[0].plot([ponding_depths_int['year'][i], ponding_depths_int['year'][i]], [min_val, max_val], color='black')  # Whiskers
     ax[0].plot([ponding_depths_int['year'][i], ponding_depths_int['year'][i]], [q1, q3], color='black', linewidth=7)  # Interquartile range (box)
@@ -4124,41 +4048,33 @@ ax[0].set_ylabel('Ponding\nDepth (m)', fontsize=fontsize)
 ## Plot horizontal line at 0.25m and put text on left side, top of line plot 'Safe Limit for Emergency Vehicles'
 ax[0].axhline(y=0.25, color='r', linestyle='--')
 ax[0].text(2020.5, 0.27, 'Safe Limit for\nEmergency Vehicles', color='k', fontsize=fontsize-2)
+ax[0].text(0.005, 1.0, 'a', transform=ax[0].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
-# ax[0].set_title('D0038\nIntermediate Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
 ax[0].set_title('Descanso Ave\nIntermediate Sea Level Rise Scenario\nGroundwater Emergence Events', fontsize=fontsize+2)
 
-# ## OPTION 1: Plot the average hours per event
-# [ax[1].bar(event_durations_int['year'], event_durations_int['mean_avg_hours_per_event'], yerr=event_durations_int['std_avg_hours_per_event'], color='blue', capsize=3)
-# [ax[1].set_ylabel('Avg Flood\nDuration (hr)', fontsize=fontsize)
-
-## OPTION 2: Box & Whisker plot for event_durations_int['duration_min', 'duration_25th', 'duration_50th', 'duration_75th', 'duration_max']
-# Create custom boxplots using the summary stats
 for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_duration):
     ax[1].plot([event_durations_int['year'][i], event_durations_int['year'][i]], [min_val, max_val], color='black')  # Whiskers
     ax[1].plot([event_durations_int['year'][i], event_durations_int['year'][i]], [q1, q3], color='black', linewidth=7)  # Interquartile range (box)
     ax[1].plot([event_durations_int['year'][i], event_durations_int['year'][i]], [q1, q3], color='white', linewidth=5)  # Interquartile range (fill)
     ax[1].plot(event_durations_int['year'][i], median, 'k_', markersize=7)  # Median line
 ax[1].set_ylabel('Duration of\nEvents (hr)', fontsize=fontsize)
-## OPTION 2b: boxplot using boxplot matplotlib function (need all data for boxplot to compute stats on)
-# bp = ax[1].boxplot(boxplot_data, positions=event_durations_int['year'], widths=0.6)
-# Customize the boxplot appearance
-# for element in ['boxes', 'whiskers','means', 'medians', 'caps']:
-#     plt.setp(bp[element], color='black')
-# plt.setp(bp['fliers'], marker='o', markersize=3, markerfacecolor='red')
 ax[1].set_yticks(np.arange(0, 16, 5))
+ax[1].text(0.005, 1.0, 'b', transform=ax[1].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the number of days with flooding
 ax[2].bar(days_emergent_int['year'], days_emergent_int['mean'], yerr=days_emergent_int['std'], color='mediumseagreen', capsize=3)
 ax[2].set_ylabel('# Days\nEmergent', fontsize=fontsize)
 # ax[2].text(2016.5, 354, 'Daily', color='k', fontsize=fontsize-2)
-ax[2].set_ylim([0, 200])
+ax[2].set_ylim([0, 220])
+ax[2].set_yticks(np.arange(0, 201, 50))
+ax[2].text(0.005, 1.0, 'c', transform=ax[2].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the total hours above threshold
 ax[3].bar(hours_emergent_int['year'], hours_emergent_int['mean'], yerr=hours_emergent_int['std'], color='mediumseagreen', capsize=3)
 ax[3].set_ylabel('Total Time\nEmergent (hr)', fontsize=fontsize)
 ## Make y-axis plot ticks and labels every 1000
 ax[3].set_yticks(np.arange(0, 801, 200))
+ax[3].text(0.005, 1.0, 'd', transform=ax[3].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Stacked bar plot for seasonal day/night/both flooding
 years = combined_seasonal_results['year']
@@ -4169,40 +4085,19 @@ winter_day = combined_seasonal_results['mean_winter_day_flood']
 winter_night = combined_seasonal_results['mean_winter_night_flood']
 winter_both = combined_seasonal_results['mean_winter_both_flood']
 
-# ## OPTION 1: Plot Day/Night/Both (units = # days)
-# ax[4].bar(years, summer_day, label='Summer Day', color='lightblue')
-# ax[4].bar(years, summer_night, bottom=summer_day, label='Summer Night', color='skyblue')
-# ax[4].bar(years, summer_both, bottom=summer_day + summer_night, label='Summer Both', color='deepskyblue')
-# ax[4].bar(years, winter_day, bottom=summer_day + summer_night + summer_both, label='Winter Day', color='lightcoral')
-# ax[4].bar(years, winter_night, bottom=summer_day + summer_night + summer_both + winter_day, label='Winter Night', color='indianred')
-# ax[4].bar(years, winter_both, bottom=summer_day + summer_night + summer_both + winter_day + winter_night, label='Winter Both', color='firebrick')
-
-## OPTION 2: Plot Day/Night (units = # events)
-# ax[4].bar(years, winter_night + winter_both, label='Winter Night', color='indigo')
-# ax[4].bar(years, winter_day + winter_both, bottom=winter_night + winter_both, label='Winter Day', color='plum')
-# ax[4].bar(years, summer_night + summer_both, bottom=winter_night + winter_day + 2*winter_both, label='Summer Night', color='royalblue')
-# ax[4].bar(years, summer_day + summer_both, bottom=winter_night + winter_day + 2*winter_both + summer_night + summer_both, label='Summer Day', color='deepskyblue')
 ax[4].bar(years, winter_night + winter_both, label='Winter Night', color='indigo')
 ax[4].bar(years, winter_day + winter_both, bottom=winter_night + winter_both, label='Winter Day', color='mediumorchid')
 ax[4].bar(years, summer_night + summer_both, bottom=winter_night + winter_day + 2*winter_both, label='Summer Night', color='mediumblue')
 ax[4].bar(years, summer_day + summer_both, bottom=winter_night + winter_day + 2*winter_both + summer_night + summer_both, label='Summer Day', color='deepskyblue')
-# Add error bars for standard deviation
-# ax[4].errorbar(years, winter_night + winter_both, 
-#                yerr=combined_seasonal_results['std_winter_night_flood']+combined_seasonal_results['std_winter_both_flood'], fmt='none', ecolor='plum', capsize=2)
-# ax[4].errorbar(years, winter_night + winter_day + 2*winter_both, 
-#                yerr=combined_seasonal_results['std_winter_day_flood']+combined_seasonal_results['std_winter_both_flood'], fmt='none', ecolor='plum', capsize=2)
-# ax[4].errorbar(years, winter_night + winter_day + 2*winter_both + summer_night + summer_both, 
-#                yerr=combined_seasonal_results['std_summer_night_flood']+combined_seasonal_results['std_summer_both_flood'], fmt='none', ecolor='lightcyan', capsize=2)
-# ax[4].errorbar(years, winter_night + winter_day + 2*winter_both + summer_night + summer_day + 2*summer_both, 
-#                yerr=combined_seasonal_results['std_summer_day_flood']+combined_seasonal_results['std_summer_both_flood'], fmt='none', ecolor='blue', capsize=2)
 
 # Set labels and title for stacked bar plot
 ax[4].set_ylabel('Emergence Events\nBy Season & TOD', fontsize=fontsize)
 handles, labels = ax[4].get_legend_handles_labels()
-ax[4].legend(handles[::-1], labels[::-1], loc='upper left', ncol=2, fontsize=fontsize-2)
+ax[4].legend(handles[::-1], labels[::-1], loc='upper left', bbox_to_anchor=(0.02, 1), ncol=2, fontsize=fontsize-2)
 
 # Set common x-axis label
 ax[4].set_xlabel('Year', fontsize=fontsize)
+ax[4].text(0.005, 1.0, 'e', transform=ax[4].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Set tick label font size
 for a in ax:
