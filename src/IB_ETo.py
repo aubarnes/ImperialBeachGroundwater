@@ -24,7 +24,7 @@ path_to_cmip6_ensemble = '../data/cmip6_ensemble.pkl'
 path_to_ETo_obs = '../data/ETo_obs.h5'
 path_to_ETo_2100 = '../data/ETo_2100.h5'
 
-long_list_num = 2 ## Integer between 0 and 7 that selects the CMIP6 model to use for the time index that includes leap years
+long_list_num = 1 ## Integer between 0 and 7 that selects the CMIP6 model to use for the time index that includes leap years
 ## Try another value if you receive error: "ValueError: Length of values (31411) does not match length of index (31390)""
 
 #%% Load evapotranspiration SPATIAL data (mm/day)

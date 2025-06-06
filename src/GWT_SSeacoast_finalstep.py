@@ -18,6 +18,7 @@ import pastas as ps
 import matplotlib.dates as mdates
 import matplotlib.patheffects as pe
 from scipy.stats import norm
+from scipy.interpolate import interp1d
 import pickle
 
 ## Values derived from 2016 DEM
@@ -491,6 +492,11 @@ data4comparison = gwt_NAVD88.tz_localize('UTC')
 hindcast_2003 = ml.simulate(tmin="2003-10-01",tmax="2024-09-30T23:00:00",freq=hindcast_freq)
 ## Localize to UTC time zone
 hindcast_2003 = hindcast_2003.tz_localize('UTC')
+
+hindcast_ntr = ml.get_contributions(tmin="2003-10-01",tmax="2024-09-30T23:00:00")[2]
+hindcast_recharge = ml.get_contributions(tmin="2003-10-01",tmax="2024-09-30T23:00:00")[0] + ml.get_contributions(tmin="2003-10-01",tmax="2024-09-30T23:00:00")[1]
+hindcast_tide = ml.get_contributions(tmin="2003-10-01",tmax="2024-09-30T23:00:00")[3]
+
 #%% Projections: Create ensemble of non-tidal residuals for 2024-2100
 ml.settings["freq"] = "1H"
 
@@ -557,45 +563,19 @@ ntr_high_17p = ntr_high_17p.astype(float)
 ntr_high = ntr_high.astype(float)
 ntr_high_83p = ntr_high_83p.astype(float)
 
-model_low_17p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
 model_low = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-model_low_83p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-
-model_intlow_17p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
 model_intlow = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-model_intlow_83p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-
-model_int_17p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
 model_int = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-model_int_83p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-
-model_inthigh_17p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
 model_inthigh = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-model_inthigh_83p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-
-model_high_17p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
 model_high = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-model_high_83p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
 
-gwt_low_17p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
 gwt_low = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-gwt_low_83p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-
-gwt_intlow_17p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
 gwt_intlow = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-gwt_intlow_83p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-
-gwt_int_17p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
 gwt_int = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-gwt_int_83p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-
-gwt_inthigh_17p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
 gwt_inthigh = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-gwt_inthigh_83p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-
-gwt_high_17p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
 gwt_high = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
-gwt_high_83p = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
+
+gwt_int_bc = pd.DataFrame(index=t_2024_2100, columns=range(ensemble_size_tot))
 
 #%% Projections: Pastas rolloff effect
 
@@ -701,7 +681,8 @@ for ntr_num in range(ensemble_size_ntr):
             name="ljntr_low",
             settings="waterlevel")
         model_low.iloc[:, i] = ml.simulate(tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_low.index)
-        gwt_low.iloc[:, i] = model_low.iloc[:, i] + offset_low
+        recharge_offset = hindcast_recharge.mean() - ml.get_contribution("recharge", tmin="2024-10-01", tmax="2100-10-01").mean()
+        gwt_low.iloc[:, i] = model_low.iloc[:, i] + offset_low + recharge_offset
 
         stress_ntr = pd.Series(ntr_intlow.iloc[:, ntr_num].values, index=pd.to_datetime(ntr_intlow.index))
         stress_ntr = stress_ntr.tz_localize(None)
@@ -711,7 +692,8 @@ for ntr_num in range(ensemble_size_ntr):
             name="ljntr_intlow",
             settings="waterlevel")
         model_intlow.iloc[:, i] = ml.simulate(tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_intlow.index)
-        gwt_intlow.iloc[:, i] = model_intlow.iloc[:, i] + offset_intlow
+        recharge_offset = hindcast_recharge.mean() - ml.get_contribution("recharge", tmin="2024-10-01", tmax="2100-10-01").mean()
+        gwt_intlow.iloc[:, i] = model_intlow.iloc[:, i] + offset_intlow + recharge_offset
 
         stress_ntr = pd.Series(ntr_int.iloc[:, ntr_num].values, index=pd.to_datetime(ntr_int.index))
         stress_ntr = stress_ntr.tz_localize(None)
@@ -721,7 +703,34 @@ for ntr_num in range(ensemble_size_ntr):
             name="ljntr_int",
             settings="waterlevel")
         model_int.iloc[:, i] = ml.simulate(warmup=warmupdays, tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_int.index)
-        gwt_int.iloc[:, i] = model_int.iloc[:, i] + offset_int
+        recharge_offset = hindcast_recharge.mean() - ml.get_contribution("recharge", tmin="2024-10-01", tmax="2100-10-01").mean()
+        gwt_int.iloc[:, i] = model_int.iloc[:, i] + offset_int + recharge_offset
+
+        # gwt_int.iloc[:, i] = model_int.iloc[:, i] + offset_int
+
+        # # 3) Fit quantile‐mapping on the historical period
+        # #    Compute a grid of quantile levels
+        # probs = np.linspace(0, 1, 1001)
+
+        # #    Empirical quantiles of model & obs
+        # mod_q = np.nanquantile(hindcast_2003, probs)
+        # obs_q = np.nanquantile(data4comparison, probs)
+
+        # #    Build two splines:
+        # #      - cdf_mod(x): gives the quantile of x in the model distribution  
+        # #      - inv_cdf_obs(p): gives the value at quantile p in the obs distribution  
+        # # cdf_mod     = interp1d(mod_q, probs, bounds_error=False, fill_value=(0, 1))
+        # cdf_mod     = interp1d(mod_q, probs, bounds_error=False, fill_value="extrapolate")
+        # inv_cdf_obs = interp1d(probs, obs_q, bounds_error=False, fill_value="extrapolate")
+
+        # delta = gwt_int.iloc[:, i] - mod_q[cdf_mod(gwt_int.iloc[:, i].astype(float)) * (len(mod_q)-1)]
+        # # 4) Apply bias correction
+        # hindcast_2003_bc = inv_cdf_obs(cdf_mod(hindcast_2003))
+        # gwt_int_bc.iloc[:, i]  = inv_cdf_obs(cdf_mod(gwt_int.iloc[:, i].astype(float)))+delta
+
+        ## save hindcast_2003 as a csv file
+        # hindcast_2003_bc.to_csv(f'hindcast_2003_bc_{i}.csv', index=True)
+        # gwt_int_bc.iloc[:, i].to_csv(f'gwt_int_bc_{i}.csv', index=True)
 
         stress_ntr = pd.Series(ntr_inthigh.iloc[:, ntr_num].values, index=pd.to_datetime(ntr_inthigh.index))
         stress_ntr = stress_ntr.tz_localize(None)
@@ -731,7 +740,8 @@ for ntr_num in range(ensemble_size_ntr):
             name="ljntr_inthigh",
             settings="waterlevel")
         model_inthigh.iloc[:, i] = ml.simulate(tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_inthigh.index)
-        gwt_inthigh.iloc[:, i] = model_inthigh.iloc[:, i] + offset_inthigh
+        recharge_offset = hindcast_recharge.mean() - ml.get_contribution("recharge", tmin="2024-10-01T00:00:00", tmax="2100-10-01T23:00:00").mean()
+        gwt_inthigh.iloc[:, i] = model_inthigh.iloc[:, i] + offset_inthigh + recharge_offset
 
         stress_ntr = pd.Series(ntr_high.iloc[:, ntr_num].values, index=pd.to_datetime(ntr_high.index))
         stress_ntr = stress_ntr.tz_localize(None)
@@ -741,7 +751,8 @@ for ntr_num in range(ensemble_size_ntr):
             name="ljntr_high",
             settings="waterlevel")
         model_high.iloc[:, i] = ml.simulate(tmin="2024-10-01", tmax="2100-10-01", freq=ml.settings["freq"]).reindex(model_high.index)
-        gwt_high.iloc[:, i] = model_high.iloc[:, i] + offset_high
+        recharge_offset = hindcast_recharge.mean() - ml.get_contribution("recharge", tmin="2024-10-01T00:00:00", tmax="2100-10-01T23:00:00").mean()
+        gwt_high.iloc[:, i] = model_high.iloc[:, i] + offset_high + recharge_offset
 
     ## Make all values into floats
     gwt_low = gwt_low.astype(float)
@@ -749,6 +760,47 @@ for ntr_num in range(ensemble_size_ntr):
     gwt_int = gwt_int.astype(float)
     gwt_inthigh = gwt_inthigh.astype(float)
     gwt_high = gwt_high.astype(float)
+
+# #%% Plot the hincast and projected contributions
+# proj_ntr_dailymax_annualmean = proj_ntr.resample('1D').max().resample('1Y').mean()
+# proj_recharge_dailymax_annualmean = proj_recharge.resample('1D').max().resample('1Y').mean()
+# proj_tide_dailymax_annualmean = proj_tide.resample('1D').max().resample('1Y').mean()
+
+# fontsize = 16
+# %matplotlib qt
+# fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(12, 10), sharex=True)
+# ## NTR Hindcast and Projections
+# ax1.plot(hindcast_ntr.resample('1D').max().resample('1Y').mean(), label='Hindcast NTR', color='black', linewidth=0.5)
+# ax1.plot(proj_ntr_dailymax_annualmean, label='Projected NTR', color='red', linewidth=0.5)
+# ax1.set_ylabel('NTR Contribution (m)', fontsize=fontsize-2)
+# ax1.set_title('NTR Contribution to Groundwater Table', fontsize=fontsize)
+# ax1.grid(True)
+# ## Recharge Hindcast and Projections
+# ax2.plot(hindcast_recharge.resample('1D').max().resample('1Y').mean(), label='Hindcast Recharge', color='black', linewidth=0.5)
+# ax2.plot(proj_recharge_dailymax_annualmean, label='Projected Recharge', color='blue', linewidth=0.5)
+# ax2.set_ylabel('Recharge Contribution (m)', fontsize=fontsize-2)
+# ax2.set_title('Recharge Contribution to Groundwater Table', fontsize=fontsize)
+# ## Tide Hindcast and Projections
+# ax3.plot(hindcast_tide.resample('1D').max().resample('1Y').mean(), label='Hindcast Tide', color='black', linewidth=0.5)
+# ax3.plot(proj_tide_dailymax_annualmean, label='Projected Tide', color='green', linewidth=0.5)
+# ax3.set_ylabel('Tide Contribution (m)', fontsize=fontsize-2)
+# ax3.set_xlabel('Year', fontsize=fontsize-2)
+# ax3.set_title('Tide Contribution to Groundwater Table', fontsize=fontsize)
+# ax3.grid(True)
+# ax3.xaxis.set_major_locator(plt.MaxNLocator(10))
+# ax3.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+# ax3.set_xlim(pd.Timestamp('2000-10-01'), pd.Timestamp('2030-10-01'))
+# plt.xticks(rotation=45)
+
+# ## Groundwater Table Hindcast and Projections
+# ax4.plot(hindcast_2003.resample('1D').max().resample('1Y').mean(), label='Hindcast GWT', color='black', linewidth=0.5)
+# ax4.plot(gwt_int.resample('1D').max().resample('1Y').mean(), label='Projected Low GWT', color='red', linewidth=0.5)
+
+# plt.tight_layout()
+# plt.show()
+
+
+
 
 #%% Projections: Resample the projected groundwater table to the daily max
 gwt_hindcast_dailymax = hindcast_2003.resample('D').max()
@@ -785,7 +837,7 @@ gwt_high_dailymax_annualmean = gwt_high_dailymax.resample('Y').mean()
 ## Hindcast
 ## error1 = var(residuals) + error_obs
 residuals = data4comparison - hindcast
-error_obs = 0.04**2 ## 0.04 m estimated observational standard deviation
+error_obs = 0.03**2 ## estimated observational standard deviation
 error1 = np.nanvar(residuals) + error_obs
 twosigma_hindcast = 2*np.sqrt(error1)
 
@@ -984,13 +1036,13 @@ ax.grid(True)
 
 plt.tight_layout()
 plt.show()
-#%% SUPPLEMENTAL: Plot the hourly groundwater table for the Intermediate Scenario for 2082
+#%% SUPPLEMENTAL: Plot the hourly groundwater table for the Intermediate Scenario for 2086
 ### (the year that the annual mean of daily maxima exceeds S Seacoast road elevation)
 fontsize = 20
 %matplotlib qt
 fig, ax = plt.subplots(1,1,figsize=(18,18),sharex=True)
 
-ax.plot(gwt_int['2082-01-01':'2082-12-31'].mean(axis = 1), color='purple', linewidth=0.5, label='Ensemble Average')
+ax.plot(gwt_int['2086-01-01':'2086-12-31'].mean(axis = 1), color='purple', linewidth=0.5, label='Ensemble Average')
 
 ## Add horizontal lines at road elevations
 ax.axhline(y=roadelevation_sseacoast, color='red', linestyle='--', label='S Seacoast Road Elevation')
@@ -1003,7 +1055,7 @@ ax.axhline(y=roadelevation_sseacoast, color='red', linestyle='--', label='S Seac
 
 # ax.plot(ljtide_2100,alpha=0.2,linewidth=0.5)
 
-ax.set_ylim([0.95, 2.3])
+# ax.set_ylim([0.95, 2.3])
 # ax.set_ylim([0.9, 3.55])
 # ax.set_yticks(np.arange(1.2, 3.51, 0.2))
 ax.set_ylabel('Groundwater Table Elevation\n(m, NAVD88)', fontsize=fontsize)
@@ -1013,7 +1065,7 @@ ax.legend([handles[idx] for idx in order], [labels[idx] for idx in order], loc='
 ax.set_title(f'Hourly Seacoast Groundwater Table Projections\nIntermediate SLR Scenario', fontsize=fontsize)
 ax.tick_params(axis='both', which='major', labelsize=fontsize)
 
-ax.set_xlim([pd.Timestamp('2082-01-01'), pd.Timestamp('2083-01-01')])
+ax.set_xlim([pd.Timestamp('2086-01-01'), pd.Timestamp('2087-01-01')])
 ax.set_xlabel('Date', fontsize=fontsize)
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
 
@@ -1505,7 +1557,7 @@ for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_depth):
     ax[0].plot([ponding_depths_int['year'][i], ponding_depths_int['year'][i]], [q1, q3], color='black', linewidth=7)  # Interquartile range (box)
     ax[0].plot([ponding_depths_int['year'][i], ponding_depths_int['year'][i]], [q1, q3], color='white', linewidth=5)  # Interquartile range (fill)
     ax[0].plot(ponding_depths_int['year'][i], median, 'k_', markersize=7)  # Median line
-ax[0].set_yticks(np.arange(0, 0.71, 0.1))
+ax[0].set_yticks(np.arange(0, 0.61, 0.1))
 ax[0].set_ylabel('Ponding\nDepth (m)', fontsize=fontsize)
 ## Plot horizontal line at 0.25m and put text on left side, top of line plot 'Safe Limit for Emergency Vehicles'
 ax[0].axhline(y=0.25, color='r', linestyle='--')
@@ -1523,7 +1575,7 @@ for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_duration):
     ax[1].plot(event_durations_int['year'][i], median, 'k_', markersize=7)  # Median line
 ax[1].set_ylabel('Duration of\nEvents (hr)', fontsize=fontsize)
 
-ax[1].set_yticks(np.arange(0, 26, 5))
+ax[1].set_yticks(np.arange(0, 21, 5))
 ax[1].text(0.005, 1.0, 'b', transform=ax[1].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the number of days with flooding
@@ -1537,7 +1589,7 @@ ax[2].text(0.005, 1.0, 'c', transform=ax[2].transAxes, fontsize=fontsize, fontwe
 ax[3].bar(hours_emergent_int['year'], hours_emergent_int['mean'], yerr=hours_emergent_int['std'], color='mediumseagreen', capsize=3)
 ax[3].set_ylabel('Total Time\nEmergent (hr)', fontsize=fontsize)
 ## Make y-axis plot ticks and labels every 1000
-ax[3].set_yticks(np.arange(0, 6001, 1000))
+ax[3].set_yticks(np.arange(0, 5001, 1000))
 ax[3].text(0.005, 1.0, 'd', transform=ax[3].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Stacked bar plot for seasonal day/night/both flooding
@@ -1822,7 +1874,7 @@ for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_depth):
     ax[0].plot([ponding_depths_low['year'][i], ponding_depths_low['year'][i]], [q1, q3], color='black', linewidth=7)  # Interquartile range (box)
     ax[0].plot([ponding_depths_low['year'][i], ponding_depths_low['year'][i]], [q1, q3], color='white', linewidth=5)  # Interquartile range (fill)
     ax[0].plot(ponding_depths_low['year'][i], median, 'k_', markersize=7)  # Median line
-ax[0].set_yticks(np.arange(0, 0.71, 0.1))
+ax[0].set_yticks(np.arange(0, 0.61, 0.1))
 ax[0].set_ylabel('Ponding\nDepth (m)', fontsize=fontsize)
 ## Plot horizontal line at 0.25m and put text on left side, top of line plot 'Safe Limit for Emergency Vehicles'
 ax[0].axhline(y=0.25, color='r', linestyle='--')
@@ -1844,13 +1896,13 @@ ax[1].text(0.005, 1.0, 'b', transform=ax[1].transAxes, fontsize=fontsize, fontwe
 ax[2].bar(days_emergent_low['year'], days_emergent_low['mean'], yerr=days_emergent_low['std'], color='mediumseagreen', capsize=3)
 ax[2].set_ylabel('# Days\nEmergent', fontsize=fontsize)
 ax[2].text(2016.5, 354, 'Daily', color='k', fontsize=fontsize-2)
-ax[2].set_yticks(np.arange(0, 16, 5))
+ax[2].set_yticks(np.arange(0, 11, 5))
 ax[2].text(0.005, 1.0, 'c', transform=ax[2].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the total hours above threshold
 ax[3].bar(hours_emergent_low['year'], hours_emergent_low['mean'], yerr=hours_emergent_low['std'], color='mediumseagreen', capsize=3)
 ax[3].set_ylabel('Total Time\nEmergent (hr)', fontsize=fontsize)
-ax[3].set_yticks(np.arange(0, 51, 10))
+ax[3].set_yticks(np.arange(0, 31, 10))
 ax[3].text(0.005, 1.0, 'd', transform=ax[3].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Stacked bar plot for seasonal day/night/both flooding
@@ -2153,20 +2205,20 @@ for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_duration):
     ax[1].plot([event_durations_intlow['year'][i], event_durations_intlow['year'][i]], [q1, q3], color='white', linewidth=5)  # Interquartile range (fill)
     ax[1].plot(event_durations_intlow['year'][i], median, 'k_', markersize=7)  # Median line
 ax[1].set_ylabel('Duration of\nEvents (hr)', fontsize=fontsize)
-ax[1].set_yticks(np.arange(0, 11, 2))
+ax[1].set_yticks(np.arange(0, 13, 2))
 ax[1].text(0.005, 1.0, 'b', transform=ax[1].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the number of days with flooding
 ax[2].bar(days_emergent_intlow['year'], days_emergent_intlow['mean'], yerr=days_emergent_intlow['std'], color='mediumseagreen', capsize=3)
 ax[2].set_ylabel('# Days\nEmergent', fontsize=fontsize)
 # ax[2].text(2016.5, 354, 'Daily', color='k', fontsize=fontsize-2)
-ax[2].set_yticks(np.arange(0, 101, 20))
+ax[2].set_yticks(np.arange(0, 51, 20))
 ax[2].text(0.005, 1.0, 'c', transform=ax[2].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the total hours above threshold
 ax[3].bar(hours_emergent_intlow['year'], hours_emergent_intlow['mean'], yerr=hours_emergent_intlow['std'], color='mediumseagreen', capsize=3)
 ax[3].set_ylabel('Total Time\nEmergent (hr)', fontsize=fontsize)
-ax[3].set_yticks(np.arange(0, 251, 50))
+ax[3].set_yticks(np.arange(0, 126, 50))
 ax[3].text(0.005, 1.0, 'd', transform=ax[3].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Stacked bar plot for seasonal day/night/both flooding
@@ -4043,7 +4095,7 @@ for i, (min_val, q1, median, q3, max_val) in enumerate(boxplot_depth):
     ax[0].plot([ponding_depths_int['year'][i], ponding_depths_int['year'][i]], [q1, q3], color='black', linewidth=7)  # Interquartile range (box)
     ax[0].plot([ponding_depths_int['year'][i], ponding_depths_int['year'][i]], [q1, q3], color='white', linewidth=5)  # Interquartile range (fill)
     ax[0].plot(ponding_depths_int['year'][i], median, 'k_', markersize=7)  # Median line
-ax[0].set_yticks(np.arange(0, 0.51, 0.1))
+ax[0].set_yticks(np.arange(0, 0.61, 0.1))
 ax[0].set_ylabel('Ponding\nDepth (m)', fontsize=fontsize)
 ## Plot horizontal line at 0.25m and put text on left side, top of line plot 'Safe Limit for Emergency Vehicles'
 ax[0].axhline(y=0.25, color='r', linestyle='--')
@@ -4065,15 +4117,15 @@ ax[1].text(0.005, 1.0, 'b', transform=ax[1].transAxes, fontsize=fontsize, fontwe
 ax[2].bar(days_emergent_int['year'], days_emergent_int['mean'], yerr=days_emergent_int['std'], color='mediumseagreen', capsize=3)
 ax[2].set_ylabel('# Days\nEmergent', fontsize=fontsize)
 # ax[2].text(2016.5, 354, 'Daily', color='k', fontsize=fontsize-2)
-ax[2].set_ylim([0, 220])
-ax[2].set_yticks(np.arange(0, 201, 50))
+ax[2].set_ylim([0, 125])
+ax[2].set_yticks(np.arange(0, 126, 25))
 ax[2].text(0.005, 1.0, 'c', transform=ax[2].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Plot the total hours above threshold
 ax[3].bar(hours_emergent_int['year'], hours_emergent_int['mean'], yerr=hours_emergent_int['std'], color='mediumseagreen', capsize=3)
 ax[3].set_ylabel('Total Time\nEmergent (hr)', fontsize=fontsize)
 ## Make y-axis plot ticks and labels every 1000
-ax[3].set_yticks(np.arange(0, 801, 200))
+ax[3].set_yticks(np.arange(0, 401, 100))
 ax[3].text(0.005, 1.0, 'd', transform=ax[3].transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='left')
 
 # Stacked bar plot for seasonal day/night/both flooding
